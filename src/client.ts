@@ -4,12 +4,12 @@ import { NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-wrapper";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 
-interface NanoClientOptions {
+export interface NanoClientOptions {
     url: string
     defaultRepresentative: NanoAddress
 }
 
-export default class NanoClient {
+export class NanoClient {
 
     readonly SEND_WORK = 'fffffff800000000';
     readonly RECEIVE_WORK = 'fffffe0000000000';
