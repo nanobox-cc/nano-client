@@ -1,8 +1,7 @@
-import { block, tools } from 'nanocurrency-web';
+import { block } from 'nanocurrency-web';
 import type {
   BlockHash,
   Frontier,
-  NANO,
   NanoAddress,
   PrivateKey,
   RAW,
@@ -13,25 +12,6 @@ import type {
   ReceiveBlock,
   RepresentativeBlock,
 } from 'nanocurrency-web/dist/lib/block-signer';
-import { BigNumber } from 'bignumber.js';
-
-/** Used for displaying RAW as NANO */
-export function rawToNano(raw: RAW): NANO {
-  return {
-    amount: tools.convert(raw.raw, 'RAW', 'NANO'),
-  };
-}
-
-export function rawToNumber(raw: RAW): string {
-  const number = new BigNumber(rawToNano(raw).amount);
-  return number.toFixed(number.decimalPlaces());
-}
-
-export function nanoToRaw(nano: NANO): RAW {
-  return {
-    raw: tools.convert(nano.amount, 'NANO', 'RAW'),
-  };
-}
 
 export function signReceiveBlock(
   address: NanoAddress,
