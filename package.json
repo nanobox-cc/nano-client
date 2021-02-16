@@ -1,0 +1,12 @@
+{
+  "name": "nanocurrency-client",
+  "version": "0.0.1",
+  "description": "Simple to use client for performing high level with the Nanocurrency network",
+  "main": "index.js",
+  "author": "Kjetil Mehl",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "typescript": "^4.1.5"
+  }
+}
