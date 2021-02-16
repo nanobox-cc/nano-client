@@ -12,8 +12,8 @@ export interface NanoAccount {
   address: NanoAddress;
   publicKey: PublicKey;
   privateKey: PrivateKey;
-  balance: RAW | undefined;
-  representative?: NanoAddress;
+  balance: RAW;
+  representative: NanoAddress;
 }
 
 export interface NanoWallet {

@@ -22,12 +22,9 @@ import {
   signSendBlock,
 } from './nanocurrency-web-wrapper';
 
-/** This file combines nanocurrency-web and nano-rpc-fetch */
-
 export const DEFAULT_REP: NanoAddress =
   'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
-let OPEN_FRONTIER =
-  '0000000000000000000000000000000000000000000000000000000000000000';
+let OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000';
 const SEND_WORK = 'fffffff800000000';
 const RECEIVE_WORK = 'fffffe0000000000';
 
@@ -137,8 +134,8 @@ async function updateWalletAccount(account: NanoAccount): Promise<NanoAccount> {
   const info: AccountInfo | undefined = await accountInfo(account.address);
   return {
     ...account,
-    balance: info.balance,
-    representative: info.representative,
+    balance: info?.balance || { raw: '0' },
+    representative: info?.representative || DEFAULT_REP,
   };
 }
 /** Updates account in account list */

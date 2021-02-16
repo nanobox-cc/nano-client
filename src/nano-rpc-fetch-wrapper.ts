@@ -58,7 +58,11 @@ export async function generateWork(
       difficulty: work,
     },
   });
-  return response.work;
+  if(response.work) {
+    return response.work;
+  } else {
+    throw new Error('work missing in response')
+  }
 }
 
 export async function getHistory(
@@ -72,10 +76,11 @@ export async function getHistory(
         count: '10',
       },
     });
+    // @ts-ignore
     return history.history.map((block) => {
       return {
         account: block.account,
-        amount: { raw: block.amount.toString() },
+        amount: { raw: block.amount?.toString() },
         type: block.type,
         localTimestamp: block.localTimestamp,
       };
@@ -97,17 +102,21 @@ export async function getPending(
       source: ModelBoolean.True,
     },
   });
-  const blocks: [hash: string, block: any][] = Object.entries(response.blocks);
-  if (blocks.length > 0) {
-    const [blockHash, { amount }] = blocks[0];
-    return {
-      hash: blockHash,
-      amount: {
-        raw: amount,
-      },
-    };
+  if (response.blocks) {
+    const blocks: [hash: string, block: any][] = Object.entries(response.blocks);
+    if (blocks.length > 0) {
+      const [blockHash, {amount}] = blocks[0];
+      return {
+        hash: blockHash,
+        amount: {
+          raw: amount,
+        },
+      };
+    } else {
+      return undefined
+    }
   } else {
-    return undefined;
+    return undefined
   }
 }
 
