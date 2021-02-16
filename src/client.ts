@@ -4,9 +4,15 @@ import { NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-wrapper";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 
+export interface BasicAuth {
+    username: string
+    password: string
+}
+
 export interface NanoClientOptions {
     url: string
-    defaultRepresentative: NanoAddress
+    defaultRepresentative: NanoAddress,
+    credentials?: BasicAuth
 }
 
 export class NanoClient {
@@ -18,7 +24,7 @@ export class NanoClient {
     readonly options: NanoClientOptions
 
     constructor(options: NanoClientOptions) {
-        this.nano = new NanoRPCWrapper(options.url)
+        this.nano = new NanoRPCWrapper(options.url, options.credentials)
         this.options = options
     }
     /** Pockets pending transactions recursively */
@@ -70,7 +76,7 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
-        await this.nano.process(receiveBlock, SubType.Receive);
+        await this.nano.process(receiveBlock, 'receive');
     }
 
     async sendNano(
@@ -92,7 +98,7 @@ export class NanoClient {
                     workHash,
                     info.representative
                 );
-                await this.nano.process(signed, SubType.Send);
+                await this.nano.process(signed, 'send');
                 return this.updateWalletAccount(account);
             } else {
                 return account;
@@ -124,7 +130,7 @@ export class NanoClient {
                     info.frontier,
                     workHash
                 );
-                await this.nano.process(signed, SubType.Change);
+                await this.nano.process(signed, 'change');
             }
         } catch (e) {
             console.log(e);
