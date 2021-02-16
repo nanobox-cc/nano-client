@@ -9,7 +9,7 @@ interface NanoClientOptions {
     defaultRepresentative: NanoAddress
 }
 
-class NanoClient {
+export default class NanoClient {
 
     readonly SEND_WORK = 'fffffff800000000';
     readonly RECEIVE_WORK = 'fffffe0000000000';
