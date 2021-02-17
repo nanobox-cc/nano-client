@@ -1,49 +1,42 @@
-import type {
-  AccountInfo,
-  NanoAddress,
-  NanoTransaction,
-  PendingTransaction,
-} from './models';
+import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction,} from './models';
 import {
-  AccountHistoryResponse,
-  AccountInfoResponse,
-  configureAuthMethods,
-  createConfiguration,
+  AccountHistoryRequest,
+  AccountInfoRequest, BlockState,
+  ModelBoolean,
   NodeRPCsApi,
-  PendingResponse,
+  PendingRequest,
+  ProcessRequest,
   ProcessResponse,
   SubType,
-  WorkGenerateResponse,
-} from 'nano-rpc-fetch';
+  WorkGenerateRequest,
+} from '@nanobox/nano-rpc-typescript';
 import {BasicAuth} from "./client";
-import {ServerConfiguration} from "nano-rpc-fetch/servers";
 
 export class NanoRPCWrapper {
 
   readonly nanoApi: NodeRPCsApi
 
   constructor(url: string, credentials?: BasicAuth) {
-    this.nanoApi = new NodeRPCsApi(createConfiguration(
-        {
-          baseServer: new ServerConfiguration<{  }>(url, {  }),
-          authMethods: credentials ? configureAuthMethods(credentials) : undefined
-        }
-    ));
+    if(credentials) {
+      this.nanoApi = new NodeRPCsApi(credentials.username, credentials.password, url)
+    } else {
+      this.nanoApi = new NodeRPCsApi(url)
+    }
   }
 
   async process(
       block: any,
       subtype: SubType
   ): Promise<ProcessResponse> {
-    const response = await this.nanoApi.process({
-      action: "process",
+    const { body } = await this.nanoApi.process({
+      action: ProcessRequest.ActionEnum.Process,
       block: block,
-      jsonBlock: 'true',
-      subtype: subtype,
-    });
+      jsonBlock: ModelBoolean.True,
+      subtype: subtype
+    })
 
-    if (response.hash) {
-      return response;
+    if (body.hash) {
+      return body;
     } else {
       throw Error('unable to process');
     }
@@ -53,13 +46,13 @@ export class NanoRPCWrapper {
       frontier: string,
       work: string
   ): Promise<string> {
-    const response: WorkGenerateResponse = await this.nanoApi.workGenerate({
-      action: "work_generate",
+    const { body } = await this.nanoApi.workGenerate({
+      action: WorkGenerateRequest.ActionEnum.WorkGenerate,
       hash: frontier,
       difficulty: work,
     });
-    if(response.work) {
-      return response.work;
+    if(body.work) {
+      return body.work;
     } else {
       throw new Error('work missing in response')
     }
@@ -70,17 +63,16 @@ export class NanoRPCWrapper {
   ): Promise<NanoTransaction[]> {
     try {
 
-      const history: AccountHistoryResponse = await this.nanoApi.accountHistory({
-        action: "account_history",
+      const { body }  = await this.nanoApi.accountHistory({
+        action: AccountHistoryRequest.ActionEnum.AccountHistory,
         account: address,
         count: '10',
       });
-      // @ts-ignore
-      return history.history.map((block) => {
+      return body.history.map((block) => {
         return {
           account: block.account,
           amount: { raw: block.amount?.toString() },
-          type: block.type,
+          type: BlockState[block.type],
           localTimestamp: block.localTimestamp,
         };
       });
@@ -92,15 +84,15 @@ export class NanoRPCWrapper {
   async getPending(
       address: NanoAddress
   ): Promise<PendingTransaction | undefined> {
-    const response: PendingResponse = await this.nanoApi.pending({
-      action: "pending",
+    const { body } = await this.nanoApi.pending({
+      action: PendingRequest.ActionEnum.Pending,
       account: address,
-      includeOnlyConfirmed: "true",
-      sorting: "true",
-      source: "true",
+      includeOnlyConfirmed: ModelBoolean.True,
+      sorting: ModelBoolean.True,
+      source: ModelBoolean.True,
     });
-    if (response.blocks) {
-      const blocks: [hash: string, block: any][] = Object.entries(response.blocks);
+    if (body.blocks) {
+      const blocks: [hash: string, block: any][] = Object.entries(body.blocks);
       if (blocks.length > 0) {
         const [blockHash, {amount}] = blocks[0];
         return {
@@ -120,24 +112,24 @@ export class NanoRPCWrapper {
   async accountInfo(
       account: NanoAddress
   ): Promise<AccountInfo | undefined> {
-    const response: AccountInfoResponse = await this.nanoApi.accountInfo({
-      action: "account_info",
+    const { body } = await this.nanoApi.accountInfo({
+      action: AccountInfoRequest.ActionEnum.AccountInfo,
       account: account,
-      representative: "true",
+      representative: ModelBoolean.True,
     });
     if (
-        response.representative === undefined ||
-        response.balance === undefined ||
-        response.frontier === undefined
+        body.representative === undefined ||
+        body.balance === undefined ||
+        body.frontier === undefined
     ) {
       return undefined;
     } else {
       return {
-        representative: response.representative,
+        representative: body.representative,
         balance: {
-          raw: response.balance.toString(),
+          raw: body.balance.toString(),
         },
-        frontier: response.frontier,
+        frontier: body.frontier,
       };
     }
   }

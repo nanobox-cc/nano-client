@@ -1,8 +1,8 @@
 import {AccountInfo, Frontier, NanoAccount, NanoAddress, PendingTransaction, RAW, ResolvedAccount} from "./models";
-import {SubType } from "nano-rpc-fetch";
-import { NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
+import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-wrapper";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
+import {SubType} from "@nanobox/nano-rpc-typescript";
 
 export interface BasicAuth {
     username: string
@@ -27,13 +27,18 @@ export class NanoClient {
         this.nano = new NanoRPCWrapper(options.url, options.credentials)
         this.options = options
     }
+
+    async getAccountInfo(address: NanoAddress): Promise<AccountInfo | undefined> {
+        return await this.nano.accountInfo(address);
+    }
+
     /** Pockets pending transactions recursively */
     async loadAndResolveAccountData(
         account: NanoAccount,
         resolvedCount: number = 0
     ): Promise<ResolvedAccount> {
         try {
-            const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
+            const info: AccountInfo | undefined = await this.getAccountInfo(account.address);
             // Set rep from account info, with fallback to cached and default
             account.representative =
                 info?.representative || account.representative || this.options.defaultRepresentative;
@@ -76,7 +81,7 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
-        await this.nano.process(receiveBlock, 'receive');
+        await this.nano.process(receiveBlock, SubType.Receive);
     }
 
     async sendNano(
@@ -98,7 +103,7 @@ export class NanoClient {
                     workHash,
                     info.representative
                 );
-                await this.nano.process(signed, 'send');
+                await this.nano.process(signed, SubType.Send);
                 return this.updateWalletAccount(account);
             } else {
                 return account;
@@ -130,7 +135,7 @@ export class NanoClient {
                     info.frontier,
                     workHash
                 );
-                await this.nano.process(signed, 'change');
+                await this.nano.process(signed, SubType.Change);
             }
         } catch (e) {
             console.log(e);
