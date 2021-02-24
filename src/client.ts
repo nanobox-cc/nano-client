@@ -1,6 +1,6 @@
 import {AccountInfo, Frontier, NanoAccount, NanoAddress, PendingTransaction, RAW, ResolvedAccount} from "./models";
 import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
-import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-wrapper";
+import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-utils";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 
 export interface BasicAuth {
