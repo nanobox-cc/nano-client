@@ -42,7 +42,7 @@ describe('nano client', () => {
         })
     })
 
-    test('setRepresentative', async () => {
+    test('set representative', async () => {
         const wallet: NanoWallet = client.generateWallet()
         await client.setRepresentative(wallet.accounts[0])
     });

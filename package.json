@@ -1,7 +1,7 @@
 {
   "name": "@nanobox/nano-client",
-  "version": "0.0.1",
-  "description": "A simple to use node/browser client for the Nano network",
+  "version": "1.0.0",
+  "description": "A simple to use Node/browser client for the Nano network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Kjetil Mehl",
@@ -9,7 +9,6 @@
   "private": false,
   "scripts": {
     "build": "tsc",
-    "run-test": "rm -rf dist/ && yarn tsc && node dist/test.js",
     "test": "jest"
   },
   "dependencies": {
