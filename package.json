@@ -13,7 +13,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@nanobox/nano-rpc-typescript": "link:/home/kjemehl/git/nanobox-nano-rpc-typescript/",
+    "@nanobox/nano-rpc-typescript": "^3.0.3",
     "base-64": "^1.0.0",
     "bignumber.js": "^9.0.1",
     "cross-fetch": "^3.0.6",
@@ -25,7 +25,6 @@
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.28",
     "jest": "^26.6.3",
-    "live-server": "^1.2.1",
     "ts-jest": "^26.5.2"
   }
 }

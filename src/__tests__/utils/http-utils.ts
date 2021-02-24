@@ -4,7 +4,7 @@ import {
     ResponseBody,
     ResponseContext,
     wrapHttpLibrary
-} from "../../../../nanobox-nano-rpc-typescript";
+} from "@nanobox/nano-rpc-typescript";
 import fs from "fs";
 
 /** Mocks out node responses */
