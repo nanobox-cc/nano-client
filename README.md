@@ -26,21 +26,22 @@ const client = new NanoClient({
 
 ### Receive
 
-To receive nano, we need address, public key and private key to signe the receive block. For testing purposes this can
-be generated over at [Nano Tools](https://nanoo.tools/key-address-seed-converter) or any similar tool. There's
-also a convenient method in the client itself to generate a wallet with account: `client.generateWallet()`.
+To receive nano, we need **address**, **public key** and **private key** to sign a receive block (_the block is signed
+locally_). For testing purposes this can be generated over at [Nano Tools](https://nanoo.tools/key-address-seed-converter) or any similar tool. There's
+also a convenient method in the client itself to generate a wallet: `client.generateWallet()`.
 
 To receive Nano, first ensure that there exists pending block for the account (aka. send a small test amount to the address).
 
 ```javascript
 const account = {
-    address: "nano_.....", // REPLACE
-    publicKey: "public-key", // REPLACE HERE
-    privateKey: "private-key", // REPLACE HERE
-    balance: { RAW: '0' }, // Balance will be updated on loading account info
+    address: "nano_.....", // Replace with address here
+    publicKey: "public-key", // Replace public key
+    privateKey: "private-key", // Replace private key
+    balance: { RAW: '0' }, // Leave this one, balance will be updated
 }
 
-const accountAfterReceive = await client.receive(account, 1)
+// Here we specify to only perform 1 "update". If there are multiple pending transactions, consider increasing this.
+const accountAfterReceive = await client.receive(account, 1) 
 
 // should show the new balance
 console.log(updatedAccount.balance) 
