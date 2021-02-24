@@ -17,7 +17,6 @@ To create the client:
 ```javascript
 import { NanoClient } from "@nanobox/nano-client";
 
-
 const client = new NanoClient({
     url: "https://api.nanobox.cc", // Or any other node url
     // Basic auth if the proxy requires this
