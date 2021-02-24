@@ -1,8 +1,20 @@
-import {AccountInfo, Frontier, NanoAccount, NanoAddress, PendingTransaction, RAW, ResolvedAccount} from "./models";
+import {
+    AccountInfo,
+    Frontier,
+    NanoAccount,
+    NanoAddress,
+    NanoWallet,
+    PendingTransaction,
+    RAW,
+    ResolvedAccount
+} from "./models";
 import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
-import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-utils";
+import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-utils";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
+import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
+
+const DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
 
 export interface BasicAuth {
     username: string
@@ -27,48 +39,90 @@ export class NanoClient {
 
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
-        this.defaultRepresentative = options.defaultRepresentative || 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u'
+        this.defaultRepresentative = options.defaultRepresentative || DEFAULT_REPRESENTATIVE
         this.options = options
     }
 
-    async getAccountInfo(address: NanoAddress): Promise<AccountInfo | undefined> {
-        return await this.nano.accountInfo(address);
-    }
-
-    /** Pockets pending transactions recursively */
-    async loadAndResolveAccountData(
-        account: NanoAccount,
-        resolvedCount: number = 0
-    ): Promise<ResolvedAccount> {
+    /** Sends the specified amount of RAW to a Nano address */
+    async send(
+        fromAccount: NanoAccount,
+        toAddress: NanoAddress,
+        amount: RAW
+    ): Promise<NanoAccount | undefined> {
         try {
-            const info: AccountInfo | undefined = await this.getAccountInfo(account.address);
-            // Set rep from account info, with fallback to cached and default
-            account.representative =
-                info?.representative || account.representative || this.defaultRepresentative;
-            // Use balance received
-            account.balance = info?.balance || { raw: '0' };
-
-            const block: PendingTransaction | undefined = await this.nano.getPending(
-                account.address
-            );
-            if (block) {
-                await this.receiveBlock(account, info?.frontier, block);
-                return this.loadAndResolveAccountData(account, resolvedCount + 1);
+            const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
+            if (info) {
+                const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
+                const signed: SignedBlock = signSendBlock(
+                    fromAccount.privateKey,
+                    info.balance,
+                    fromAccount.address,
+                    toAddress,
+                    info.frontier,
+                    amount,
+                    workHash,
+                    info.representative
+                );
+                await this.nano.process(signed, "send");
+                return this.updateWalletAccount(fromAccount);
+            } else {
+                return fromAccount;
             }
-            return {
-                account,
-                resolvedCount: resolvedCount,
-            };
-        } catch (e) {
-            return {
-                account,
-                resolvedCount: resolvedCount,
-                error: 'unable-to-fetch',
-            };
+        } catch (error) {
+            console.log(error);
         }
     }
 
-    async receiveBlock(
+    /** Resolves transactions for the Nano account */
+    async receive(
+        account: NanoAccount,
+        maxToResolve?: number
+    ): Promise<ResolvedAccount> {
+        return this.loadAndResolveAccountData(account, maxToResolve || 1, 0)
+    }
+
+    private async loadAndResolveAccountData(
+        account: NanoAccount,
+        maxToResolve: number,
+        depth: number = 0
+    ): Promise<ResolvedAccount> {
+        if(depth >= maxToResolve) {
+            return {
+                account,
+                resolvedCount: depth,
+            };
+        } else {
+            try {
+                const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
+                // Set rep from account info, with fallback to cached and default
+                account.representative =
+                    info?.representative || account.representative || this.defaultRepresentative;
+                // Use balance received
+                account.balance = info?.balance || { raw: '0' };
+
+                const block: PendingTransaction | undefined = await this.nano.getPending(
+                    account.address
+                );
+                if (block) {
+                    await this.receiveBlock(account, info?.frontier, block);
+                    return this.loadAndResolveAccountData(account, maxToResolve, depth + 1);
+                }
+                return {
+                    account,
+                    resolvedCount: depth,
+                };
+            } catch (e) {
+                console.log(e)
+                return {
+                    account,
+                    resolvedCount: depth,
+                    error: 'unable-to-fetch',
+                };
+            }
+        }
+    }
+
+    private async receiveBlock(
         account: NanoAccount,
         frontier: Frontier | undefined,
         pending: PendingTransaction
@@ -80,40 +134,11 @@ export class NanoClient {
             work,
             frontier || this.OPEN_FRONTIER,
             account.balance,
-            account.representative,
+            account.representative || this.defaultRepresentative,
             pending.hash,
             pending.amount
         );
         await this.nano.process(receiveBlock, "receive");
-    }
-
-    async sendNano(
-        account: NanoAccount,
-        toAddress: NanoAddress,
-        amount: RAW
-    ): Promise<NanoAccount | undefined> {
-        try {
-            const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
-            if (info) {
-                const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
-                const signed: SignedBlock = signSendBlock(
-                    account.privateKey,
-                    info.balance,
-                    account.address,
-                    toAddress,
-                    info.frontier,
-                    amount,
-                    workHash,
-                    info.representative
-                );
-                await this.nano.process(signed, "send");
-                return this.updateWalletAccount(account);
-            } else {
-                return account;
-            }
-        } catch (error) {
-            console.log(error);
-        }
     }
 
     async updateWalletAccount(account: NanoAccount): Promise<NanoAccount> {
@@ -125,6 +150,7 @@ export class NanoClient {
         };
     }
 
+    /** Sets representative to the one configured on the model */
     async setRepresentative(account: NanoAccount): Promise<void> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
@@ -134,7 +160,7 @@ export class NanoClient {
                     account.privateKey,
                     account.balance,
                     account.address,
-                    account.representative,
+                    account.representative || this.defaultRepresentative,
                     info.frontier,
                     workHash
                 );
@@ -143,6 +169,21 @@ export class NanoClient {
         } catch (e) {
             console.log(e);
             return undefined;
+        }
+    }
+
+    generateWallet(): NanoWallet {
+        const wallet: Wallet = generateLegacyWallet()
+        return {
+            accounts: wallet.accounts.map(a => {
+                return {
+                    publicKey: a.publicKey,
+                    privateKey: a.privateKey,
+                    balance: { raw: '0' },
+                    address: a.address
+                }
+            }),
+            seed: wallet.seed
         }
     }
 }

@@ -8,18 +8,16 @@ export type BlockHash = string;
 type ApiError = 'unable-to-fetch';
 
 export interface NanoAccount {
-  alias: string;
   address: NanoAddress;
   publicKey: PublicKey;
   privateKey: PrivateKey;
   balance: RAW;
-  representative: NanoAddress;
+  representative?: NanoAddress;
 }
 
 export interface NanoWallet {
   accounts: NanoAccount[];
   seed: Seed;
-  encryptionSecret: string | undefined;
 }
 
 export interface NanoTransaction {

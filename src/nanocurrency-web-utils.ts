@@ -1,4 +1,4 @@
-import { block } from 'nanocurrency-web';
+import {block, wallet} from 'nanocurrency-web';
 import type {
   BlockHash,
   Frontier,
@@ -12,6 +12,7 @@ import type {
   ReceiveBlock,
   RepresentativeBlock,
 } from 'nanocurrency-web/dist/lib/block-signer';
+import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
 
 export function signReceiveBlock(
   address: NanoAddress,
@@ -76,4 +77,8 @@ export function signRepresentativeBlock(
   };
 
   return block.representative(data, privateKey);
+}
+
+export function generateLegacyWallet(seed?: string): Wallet {
+  return wallet.generateLegacy(seed || "")
 }
