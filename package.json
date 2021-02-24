@@ -1,7 +1,7 @@
 {
   "name": "@nanobox/nano-client",
   "version": "0.0.1",
-  "description": "Simple to use client for the Nano network",
+  "description": "A simple to use node/browser client for the Nano network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Kjetil Mehl",
