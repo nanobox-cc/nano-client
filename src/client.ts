@@ -2,7 +2,6 @@ import {AccountInfo, Frontier, NanoAccount, NanoAddress, PendingTransaction, RAW
 import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-wrapper";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
-import {SubType} from "@nanobox/nano-rpc-typescript";
 
 export interface BasicAuth {
     username: string
@@ -81,7 +80,7 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
-        await this.nano.process(receiveBlock, SubType.Receive);
+        await this.nano.process(receiveBlock, "receive");
     }
 
     async sendNano(
@@ -103,7 +102,7 @@ export class NanoClient {
                     workHash,
                     info.representative
                 );
-                await this.nano.process(signed, SubType.Send);
+                await this.nano.process(signed, "send");
                 return this.updateWalletAccount(account);
             } else {
                 return account;
@@ -135,7 +134,7 @@ export class NanoClient {
                     info.frontier,
                     workHash
                 );
-                await this.nano.process(signed, SubType.Change);
+                await this.nano.process(signed, "change");
             }
         } catch (e) {
             console.log(e);

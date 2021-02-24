@@ -1,42 +1,41 @@
 import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction,} from './models';
 import {
-  AccountHistoryRequest,
-  AccountInfoRequest, BlockState,
-  ModelBoolean,
+  createConfiguration,
   NodeRPCsApi,
-  PendingRequest,
-  ProcessRequest,
   ProcessResponse,
   SubType,
-  WorkGenerateRequest,
+  ServerConfiguration, wrapHttpLibrary
 } from '@nanobox/nano-rpc-typescript';
 import {BasicAuth} from "./client";
+import {crossFetch} from "./lib/cross-fetch";
 
 export class NanoRPCWrapper {
 
   readonly nanoApi: NodeRPCsApi
 
   constructor(url: string, credentials?: BasicAuth) {
-    if(credentials) {
-      this.nanoApi = new NodeRPCsApi(credentials.username, credentials.password, url)
-    } else {
-      this.nanoApi = new NodeRPCsApi(url)
-    }
+    this.nanoApi = new NodeRPCsApi(createConfiguration({
+      httpApi: wrapHttpLibrary(crossFetch()),
+      baseServer: new ServerConfiguration<{  }>(url, {  }),
+      authMethods: {
+        BasicAuth: credentials
+      }
+    }))
   }
 
   async process(
       block: any,
       subtype: SubType
   ): Promise<ProcessResponse> {
-    const { body } = await this.nanoApi.process({
-      action: ProcessRequest.ActionEnum.Process,
+    const response = await this.nanoApi.process({
+      action: 'process',
       block: block,
-      jsonBlock: ModelBoolean.True,
+      jsonBlock: 'true',
       subtype: subtype
     })
 
-    if (body.hash) {
-      return body;
+    if (response.hash) {
+      return response;
     } else {
       throw Error('unable to process');
     }
@@ -46,13 +45,13 @@ export class NanoRPCWrapper {
       frontier: string,
       work: string
   ): Promise<string> {
-    const { body } = await this.nanoApi.workGenerate({
-      action: WorkGenerateRequest.ActionEnum.WorkGenerate,
+    const response = await this.nanoApi.workGenerate({
+      action: 'work_generate',
       hash: frontier,
       difficulty: work,
     });
-    if(body.work) {
-      return body.work;
+    if(response.work) {
+      return response.work;
     } else {
       throw new Error('work missing in response')
     }
@@ -63,16 +62,16 @@ export class NanoRPCWrapper {
   ): Promise<NanoTransaction[]> {
     try {
 
-      const { body }  = await this.nanoApi.accountHistory({
-        action: AccountHistoryRequest.ActionEnum.AccountHistory,
+      const response = await this.nanoApi.accountHistory({
+        action: 'account_history',
         account: address,
         count: '10',
       });
-      return body.history.map((block) => {
+      return response.history.map((block) => {
         return {
           account: block.account,
           amount: { raw: block.amount?.toString() },
-          type: BlockState[block.type],
+          type: block.type,
           localTimestamp: block.localTimestamp,
         };
       });
@@ -84,15 +83,15 @@ export class NanoRPCWrapper {
   async getPending(
       address: NanoAddress
   ): Promise<PendingTransaction | undefined> {
-    const { body } = await this.nanoApi.pending({
-      action: PendingRequest.ActionEnum.Pending,
+    const response = await this.nanoApi.pending({
+      action: 'pending',
       account: address,
-      includeOnlyConfirmed: ModelBoolean.True,
-      sorting: ModelBoolean.True,
-      source: ModelBoolean.True,
+      includeOnlyConfirmed: 'true',
+      sorting: 'true',
+      source: 'true',
     });
-    if (body.blocks) {
-      const blocks: [hash: string, block: any][] = Object.entries(body.blocks);
+    if (response.blocks) {
+      const blocks: [hash: string, block: any][] = Object.entries(response.blocks);
       if (blocks.length > 0) {
         const [blockHash, {amount}] = blocks[0];
         return {
@@ -112,24 +111,24 @@ export class NanoRPCWrapper {
   async accountInfo(
       account: NanoAddress
   ): Promise<AccountInfo | undefined> {
-    const { body } = await this.nanoApi.accountInfo({
-      action: AccountInfoRequest.ActionEnum.AccountInfo,
+    const response = await this.nanoApi.accountInfo({
+      action: 'account_info',
       account: account,
-      representative: ModelBoolean.True,
+      representative: 'true',
     });
     if (
-        body.representative === undefined ||
-        body.balance === undefined ||
-        body.frontier === undefined
+        response.representative === undefined ||
+        response.balance === undefined ||
+        response.frontier === undefined
     ) {
       return undefined;
     } else {
       return {
-        representative: body.representative,
+        representative: response.representative,
         balance: {
-          raw: body.balance.toString(),
+          raw: response.balance.toString(),
         },
-        frontier: body.frontier,
+        frontier: response.frontier,
       };
     }
   }
