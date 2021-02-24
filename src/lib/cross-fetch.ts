@@ -1,4 +1,9 @@
-import {PromiseHttpLibrary, RequestContext, ResponseContext} from "@nanobox/nano-rpc-typescript";
+import {
+    HttpLibrary,
+    RequestContext,
+    ResponseContext,
+    wrapHttpLibrary
+} from "@nanobox/nano-rpc-typescript";
 import fetch from 'cross-fetch';
 
 import btoa from 'base-64'
@@ -7,8 +12,8 @@ import btoa from 'base-64'
 global.btoa = btoa.encode
 
 /** Supports fetch on both node.js and browser */
-export function crossFetch(): PromiseHttpLibrary {
-    return {
+export function crossFetch(): HttpLibrary {
+    return wrapHttpLibrary({
         send(request: RequestContext): Promise<ResponseContext> {
             let method = request.getHttpMethod().toString();
             let body = request.getBody();
@@ -31,5 +36,5 @@ export function crossFetch(): PromiseHttpLibrary {
                 return new ResponseContext(resp.status, headers, body);
             })
         }
-    }
+    })
 }

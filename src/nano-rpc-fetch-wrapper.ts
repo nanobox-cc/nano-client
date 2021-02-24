@@ -4,7 +4,8 @@ import {
   NodeRPCsApi,
   ProcessResponse,
   SubType,
-  ServerConfiguration, wrapHttpLibrary
+  ServerConfiguration,
+  HttpLibrary
 } from '@nanobox/nano-rpc-typescript';
 import {BasicAuth} from "./client";
 import {crossFetch} from "./lib/cross-fetch";
@@ -13,9 +14,9 @@ export class NanoRPCWrapper {
 
   readonly nanoApi: NodeRPCsApi
 
-  constructor(url: string, credentials?: BasicAuth) {
+  constructor(url: string, httpLibrary?: HttpLibrary, credentials?: BasicAuth) {
     this.nanoApi = new NodeRPCsApi(createConfiguration({
-      httpApi: wrapHttpLibrary(crossFetch()),
+      httpApi: httpLibrary || crossFetch(),
       baseServer: new ServerConfiguration<{  }>(url, {  }),
       authMethods: {
         BasicAuth: credentials
@@ -116,11 +117,7 @@ export class NanoRPCWrapper {
       account: account,
       representative: 'true',
     });
-    if (
-        response.representative === undefined ||
-        response.balance === undefined ||
-        response.frontier === undefined
-    ) {
+    if (response.representative === undefined) {
       return undefined;
     } else {
       return {

@@ -2,6 +2,7 @@ import {AccountInfo, Frontier, NanoAccount, NanoAddress, PendingTransaction, RAW
 import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-utils";
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
+import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
 
 export interface BasicAuth {
     username: string
@@ -10,8 +11,9 @@ export interface BasicAuth {
 
 export interface NanoClientOptions {
     url: string
-    defaultRepresentative: NanoAddress,
-    credentials?: BasicAuth
+    defaultRepresentative?: NanoAddress,
+    credentials?: BasicAuth,
+    httpLibrary?: HttpLibrary
 }
 
 export class NanoClient {
@@ -21,9 +23,11 @@ export class NanoClient {
     readonly OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000'
     readonly nano: NanoRPCWrapper
     readonly options: NanoClientOptions
+    readonly defaultRepresentative: NanoAddress
 
     constructor(options: NanoClientOptions) {
-        this.nano = new NanoRPCWrapper(options.url, options.credentials)
+        this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
+        this.defaultRepresentative = options.defaultRepresentative || 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u'
         this.options = options
     }
 
@@ -40,7 +44,7 @@ export class NanoClient {
             const info: AccountInfo | undefined = await this.getAccountInfo(account.address);
             // Set rep from account info, with fallback to cached and default
             account.representative =
-                info?.representative || account.representative || this.options.defaultRepresentative;
+                info?.representative || account.representative || this.defaultRepresentative;
             // Use balance received
             account.balance = info?.balance || { raw: '0' };
 
@@ -117,7 +121,7 @@ export class NanoClient {
         return {
             ...account,
             balance: info?.balance || { raw: '0' },
-            representative: info?.representative || this.options.defaultRepresentative,
+            representative: info?.representative || this.defaultRepresentative,
         };
     }
 
