@@ -141,6 +141,7 @@ export class NanoClient {
         await this.nano.process(receiveBlock, "receive");
     }
 
+    /** Returns Account info from the network */
     async updateWalletAccount(account: NanoAccount): Promise<NanoAccount> {
         const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
         return {
@@ -150,7 +151,7 @@ export class NanoClient {
         };
     }
 
-    /** Sets representative to the one configured on the model */
+    /** Updates representative */
     async setRepresentative(account: NanoAccount): Promise<void> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
@@ -172,6 +173,7 @@ export class NanoClient {
         }
     }
 
+    /** Generates a wallet based on a random Nano seed */
     generateWallet(): NanoWallet {
         const wallet: Wallet = generateLegacyWallet()
         return {

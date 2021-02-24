@@ -1,9 +1,11 @@
 import {NanoClient} from "../client";
 import {mockHttpLibrary} from "./utils/http-utils";
-import {NanoAccount, NanoWallet} from "../models";
+import {NanoWallet} from "../models";
 
 const client = new NanoClient({
     url: "https://api.nanobox.cc",
+    // Basic auth if not using node directly
+    credentials: { username: 'username', password: 'password' },
     // Only set in tests
     httpLibrary: mockHttpLibrary()
 })
@@ -46,4 +48,8 @@ describe('nano client', () => {
         const wallet: NanoWallet = client.generateWallet()
         await client.setRepresentative(wallet.accounts[0])
     });
+
+    test('with basic auth', () => {
+
+    })
 })
