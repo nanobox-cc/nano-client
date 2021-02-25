@@ -37,7 +37,7 @@ const account = {
     address: "nano_.....", // Replace with address here
     publicKey: "public-key", // Replace public key
     privateKey: "private-key", // Replace private key
-    balance: { RAW: '0' }, // Leave this one, balance will be updated
+    balance: { raw: '0' }, // Leave this one, balance will be updated
 }
 
 // Here we specify to only perform 1 "update". If there are multiple pending transactions, consider increasing this.
