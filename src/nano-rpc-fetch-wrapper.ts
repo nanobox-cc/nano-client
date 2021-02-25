@@ -5,7 +5,7 @@ import {
   ProcessResponse,
   SubType,
   ServerConfiguration,
-  HttpLibrary
+  HttpLibrary, BlockDataJson
 } from '@nanobox/nano-rpc-typescript';
 import {BasicAuth} from "./client";
 import {crossFetch} from "./lib/cross-fetch";
@@ -25,13 +25,13 @@ export class NanoRPCWrapper {
   }
 
   async process(
-      block: any,
+      block: BlockDataJson,
       subtype: SubType
   ): Promise<ProcessResponse> {
     const response = await this.nanoApi.process({
       action: 'process',
       block: block,
-      jsonBlock: 'true',
+      json_block: 'true',
       subtype: subtype
     })
 
@@ -73,7 +73,7 @@ export class NanoRPCWrapper {
           account: block.account,
           amount: { raw: block.amount?.toString() },
           type: block.type,
-          localTimestamp: block.localTimestamp,
+          localTimestamp: block.local_timestamp,
         };
       });
     } catch (e) {
@@ -87,7 +87,7 @@ export class NanoRPCWrapper {
     const response = await this.nanoApi.pending({
       action: 'pending',
       account: address,
-      includeOnlyConfirmed: 'true',
+      include_only_confirmed: 'true',
       sorting: 'true',
       source: 'true',
     });

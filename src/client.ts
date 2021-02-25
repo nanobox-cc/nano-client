@@ -63,6 +63,7 @@ export class NanoClient {
                     workHash,
                     info.representative
                 );
+                // @ts-ignore
                 await this.nano.process(signed, "send");
                 return this.updateWalletAccount(fromAccount);
             } else {
@@ -84,7 +85,7 @@ export class NanoClient {
     private async loadAndResolveAccountData(
         account: NanoAccount,
         maxToResolve: number,
-        depth: number = 0
+        depth: number,
     ): Promise<ResolvedAccount> {
         if(depth >= maxToResolve) {
             return {
@@ -100,9 +101,7 @@ export class NanoClient {
                 // Use balance received
                 account.balance = info?.balance || { raw: '0' };
 
-                const block: PendingTransaction | undefined = await this.nano.getPending(
-                    account.address
-                );
+                const block: PendingTransaction | undefined = await this.nano.getPending(account.address);
                 if (block) {
                     await this.receiveBlock(account, info?.frontier, block);
                     return this.loadAndResolveAccountData(account, maxToResolve, depth + 1);
@@ -138,6 +137,7 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
+        // @ts-ignore
         await this.nano.process(receiveBlock, "receive");
     }
 
@@ -165,6 +165,7 @@ export class NanoClient {
                     info.frontier,
                     workHash
                 );
+                // @ts-ignore
                 await this.nano.process(signed, "change");
             }
         } catch (e) {
