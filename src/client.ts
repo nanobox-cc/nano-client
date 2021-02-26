@@ -87,37 +87,29 @@ export class NanoClient {
         maxToResolve: number,
         depth: number,
     ): Promise<ResolvedAccount> {
-        if(depth >= maxToResolve) {
+        try {
+            const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
+            // Set rep from account info, with fallback to cached and default
+            account.representative =
+                info?.representative || account.representative || this.defaultRepresentative;
+            // Use balance received
+            account.balance = info?.balance || { raw: '0' };
+
+            const block: PendingTransaction | undefined = await this.nano.getPending(account.address);
+            if (block && depth < maxToResolve) {
+                await this.receiveBlock(account, info?.frontier, block);
+                return this.loadAndResolveAccountData(account, maxToResolve, depth + 1);
+            }
             return {
                 account,
                 resolvedCount: depth,
             };
-        } else {
-            try {
-                const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
-                // Set rep from account info, with fallback to cached and default
-                account.representative =
-                    info?.representative || account.representative || this.defaultRepresentative;
-                // Use balance received
-                account.balance = info?.balance || { raw: '0' };
-
-                const block: PendingTransaction | undefined = await this.nano.getPending(account.address);
-                if (block) {
-                    await this.receiveBlock(account, info?.frontier, block);
-                    return this.loadAndResolveAccountData(account, maxToResolve, depth + 1);
-                }
-                return {
-                    account,
-                    resolvedCount: depth,
-                };
-            } catch (e) {
-                console.log(e)
-                return {
-                    account,
-                    resolvedCount: depth,
-                    error: 'unable-to-fetch',
-                };
-            }
+        } catch (e) {
+            return {
+                account,
+                resolvedCount: depth,
+                error: 'unable-to-fetch',
+            };
         }
     }
 
