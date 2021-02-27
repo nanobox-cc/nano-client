@@ -19,7 +19,7 @@ import { NanoClient } from "@nanobox/nano-client";
 
 const client = new NanoClient({
     url: "https://api.nanobox.cc", // Or any other node url
-    // Basic auth if the proxy requires this
+    // Basic auth if the Node or proxy requires this
     // credentials: { username: 'username', password: 'password' }
 })
 ```
