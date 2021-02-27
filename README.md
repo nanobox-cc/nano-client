@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/%40nanobox%2Fnano-client.svg)](https://badge.fury.io/js/%40nanobox%2Fnano-client)
+
 # Simple Nano client for Node and Browser
 
 A simplified client for the Nano network. This library aims to support the most used actions for interacting
