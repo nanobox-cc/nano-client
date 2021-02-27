@@ -1,4 +1,5 @@
 [![npm version](https://badge.fury.io/js/%40nanobox%2Fnano-client.svg)](https://badge.fury.io/js/%40nanobox%2Fnano-client)
+![build](https://github.com/nanobox-cc/nano-client/actions/workflows/build.yml/badge.svg)
 
 # Simple Nano client for Node and Browser
 
