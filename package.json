@@ -1,6 +1,6 @@
 {
   "name": "@nanobox/nano-client",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A simple to use Node/browser client for the Nano network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
