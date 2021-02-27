@@ -1,4 +1,4 @@
-# Nanocurreny client for Node and Browser
+# Simple Nano client for Node and Browser
 
 A simplified client for the Nano network. This library aims to support the most used actions for interacting
 with Nano.
