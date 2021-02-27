@@ -30,12 +30,12 @@ export interface NanoClientOptions {
 
 export class NanoClient {
 
-    readonly SEND_WORK = 'fffffff800000000';
-    readonly RECEIVE_WORK = 'fffffe0000000000';
-    readonly OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000'
-    readonly nano: NanoRPCWrapper
-    readonly options: NanoClientOptions
-    readonly defaultRepresentative: NanoAddress
+    private readonly SEND_WORK = 'fffffff800000000';
+    private readonly RECEIVE_WORK = 'fffffe0000000000';
+    private readonly OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000'
+    private readonly nano: NanoRPCWrapper
+    private readonly defaultRepresentative: NanoAddress
+    private readonly options: NanoClientOptions
 
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
