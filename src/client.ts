@@ -13,7 +13,7 @@ import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSen
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
 import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
-import {setup} from "./lib/nano-ws";
+import NanoWebsocket from "./lib/nano-ws";
 import WebSocket from "isomorphic-ws";
 
 const DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
@@ -40,14 +40,14 @@ export class NanoClient {
     private readonly defaultRepresentative: NanoAddress
     private readonly options: NanoClientOptions
 
-    private readonly websocket?: WebSocket
+    private readonly websocket?: NanoWebsocket
 
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
         this.defaultRepresentative = options.defaultRepresentative || DEFAULT_REPRESENTATIVE
         this.options = options
 
-        this.websocket = options.websocketUrl ? setup(options.websocketUrl) : undefined
+        this.websocket = options.websocketUrl ? new NanoWebsocket(options.websocketUrl) : undefined
     }
 
     /** Sends the specified amount of RAW to a Nano address */

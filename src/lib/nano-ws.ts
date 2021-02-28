@@ -12,24 +12,30 @@ interface WSSubscribe {
     options: WSOptions
 }
 
-export function setup(websocketUrl: string): WebSocket {
-    const ws: WebSocket = new WebSocket(websocketUrl)
+export default class NanoWebsocket {
 
-    ws.onopen = function open() {
-        console.log('connected');
-        ws.send(Date.now());
+    readonly ws: WebSocket
+
+    constructor(websocketUrl: string) {
+        this.ws = new WebSocket(websocketUrl)
+
+        this.ws.onopen = () => {
+            console.log('connected');
+            this.ws.send(Date.now());
+        }
+
+        this.ws.onclose = () => {
+            console.log('disconnected');
+        }
+
+        this.ws.onmessage = (data: any) => {
+            console.log(`Roundtrip time: ${Date.now() - data} ms`);
+
+            setTimeout(() => {
+                this.ws.send(Date.now());
+            }, 500)
+        }
+
     }
 
-    ws.onclose = function close() {
-        console.log('disconnected');
-    }
-
-    ws.onmessage = function incoming(data: any) {
-        console.log(`Roundtrip time: ${Date.now() - data} ms`);
-
-        setTimeout(function timeout() {
-            ws.send(Date.now());
-        }, 500);
-    }
-    return ws
 }
