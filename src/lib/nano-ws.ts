@@ -1,7 +1,7 @@
 import WebSocket from "isomorphic-ws";
 
 import {NanoAddress, RAW} from "../models";
-import {BlockDataJson, SubType} from "@nanobox/nano-rpc-typescript";
+import {BlockDataJson} from "@nanobox/nano-rpc-typescript";
 
 type WS_ACTION = 'subscribe'
 type WS_TOPIC = 'confirmation'
@@ -27,26 +27,27 @@ interface ConfirmationMessage extends WSResponse {
     block: BlockDataJson
 }
 
-interface Transaction {
+export interface Sent {
     account: NanoAddress
     amount: RAW
     currentBalance: RAW
 }
 
-export interface Send extends Transaction {
-    to: NanoAddress
+export interface Received {
+    account: NanoAddress
+    amount: RAW
+    currentBalance: RAW
 }
 
-export interface Receive extends Transaction {
-    from: NanoAddress
+interface Listener {
+    onSent?: (s: Sent) => void
+    onReceived?: (s: Received) => void
 }
 
 export default class NanoWebsocket {
 
+    private listeners: Record<NanoAddress, Listener> = {}
     private readonly ws: WebSocket
-
-    private onSend?: (send: Send) => void
-    private onReceive?: (receive: Receive) => void
 
     constructor(websocketUrl: string) {
         this.ws = new WebSocket(websocketUrl)
@@ -60,24 +61,21 @@ export default class NanoWebsocket {
                 if(response.topic === 'confirmation' && response.message) {
                     const confirmation: ConfirmationMessage = response.message
                     const balance = confirmation.block.balance ? confirmation.block.balance.toString() : '0'
+
                     // @ts-ignore
                     if(confirmation.block.subtype === 'send') {
-                        this.onSend?.({
+                        this.listeners[confirmation.account]?.onSent?.({
                             account: confirmation.account,
-                            // @ts-ignore
-                            to: confirmation.block.link_as_account,
                             currentBalance: { raw: balance },
                             amount: { raw: confirmation.amount }
                         })
                     }
                     // @ts-ignore
                     else if(confirmation.block.subtype === 'receive') {
-                        this.onReceive?.({
+                        this.listeners[confirmation.account]?.onReceived?.({
                             account: confirmation.account,
-                            // @ts-ignore
-                            from: confirmation.block.link_as_account,
                             currentBalance: { raw: balance },
-                            amount: { raw: confirmation.amount }
+                            amount: { raw: confirmation.amount },
                         })
                     }
                 }
@@ -87,10 +85,23 @@ export default class NanoWebsocket {
         }
     }
 
-    onTransaction(accounts: NanoAddress[], onSend?: (send: Send) => void, onReceive?: (receive: Receive) => void): void {
-        this.onSend = onSend
-        this.onReceive = onReceive
+    onSent(address: NanoAddress, send?: (s: Sent) => void) {
+        this.listeners[address] = {
+            ...this.listeners[address],
+            onSent: send,
+        }
+        this.updateSubscribe(Object.keys(this.listeners))
+    }
 
+    onReceived(address: NanoAddress, receive?: (s: Received) => void) {
+        this.listeners[address] = {
+            ...this.listeners[address],
+            onReceived: receive,
+        }
+        this.updateSubscribe(Object.keys(this.listeners))
+    }
+
+    private updateSubscribe(accounts: NanoAddress[]): void {
         const message: WSMessage = {
             action: 'subscribe',
             topic: 'confirmation',

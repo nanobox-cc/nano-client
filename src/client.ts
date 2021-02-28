@@ -13,7 +13,7 @@ import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSen
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
 import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
-import NanoWebsocket, {Receive, Send} from "./lib/nano-ws";
+import NanoWebsocket, {Received, Sent} from "./lib/nano-ws";
 
 export interface BasicAuth {
     username: string
@@ -186,8 +186,14 @@ export class NanoClient {
             seed: wallet.seed
         }
     }
-    /** Listen for transactions on the given addresses */
-    onTransaction(accounts: NanoAddress[], onSend?: (send: Send) => void, onReceive?: (received: Receive) => void): void {
-        this.websocket?.onTransaction(accounts, onSend, onReceive)
+
+    /** Listen for sent transactions to a given address */
+    onSend(address: NanoAddress, sent: (s: Sent) => void) {
+        this.websocket?.onSent(address, sent)
+    }
+    /** Listens for received transaction on a given address */
+    onReceive(address: NanoAddress, receive: (s: Received) => void) {
+        this.websocket?.onReceived(address, receive)
     }
 }
+
