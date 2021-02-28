@@ -486,10 +486,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@nanobox/nano-rpc-typescript@^3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@nanobox/nano-rpc-typescript/-/nano-rpc-typescript-3.0.5.tgz#95bcf4cbd6ef3e102d9744325f7a0d33fa7e5651"
-  integrity sha512-kayTP+Pbm9HT02XmtLVjklFKTJhp/G0pIuBXhBRKK2ha92u0T4EzYI4jwFmi/UffxYql9RDBd9H/mDT1Pkc00g==
+"@nanobox/nano-rpc-typescript@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@nanobox/nano-rpc-typescript/-/nano-rpc-typescript-3.0.7.tgz#39747d9839a1cb89f2385554bb0d5d5119ddd7f2"
+  integrity sha512-kWwz2g1BCDvkMbXh9dg7S8Ko51rrbObt5mRa89wYNyHIlSlH/FoBbimsX86iyV8NwdlVoG/4XR5RheIXKu2aXQ==
   dependencies:
     es6-promise "^4.2.4"
     url-parse "^1.4.3"

@@ -62,16 +62,13 @@ export default class NanoWebsocket {
                     const confirmation: ConfirmationMessage = response.message
                     const balance = confirmation.block.balance ? confirmation.block.balance.toString() : '0'
 
-                    // @ts-ignore
                     if(confirmation.block.subtype === 'send') {
                         this.listeners[confirmation.account]?.onSent?.({
                             account: confirmation.account,
                             currentBalance: { raw: balance },
                             amount: { raw: confirmation.amount }
                         })
-                    }
-                    // @ts-ignore
-                    else if(confirmation.block.subtype === 'receive') {
+                    } else if(confirmation.block.subtype === 'receive') {
                         this.listeners[confirmation.account]?.onReceived?.({
                             account: confirmation.account,
                             currentBalance: { raw: balance },
