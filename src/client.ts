@@ -13,8 +13,7 @@ import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSen
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
 import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
-
-const DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
+import NanoWebsocket, {Received, Sent} from "./lib/nano-ws";
 
 export interface BasicAuth {
     username: string
@@ -25,11 +24,13 @@ export interface NanoClientOptions {
     url: string
     defaultRepresentative?: NanoAddress,
     credentials?: BasicAuth,
-    httpLibrary?: HttpLibrary
+    httpLibrary?: HttpLibrary,
+    websocketUrl?: string,
 }
 
 export class NanoClient {
 
+    private readonly DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
     private readonly SEND_WORK = 'fffffff800000000';
     private readonly RECEIVE_WORK = 'fffffe0000000000';
     private readonly OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000'
@@ -37,10 +38,14 @@ export class NanoClient {
     private readonly defaultRepresentative: NanoAddress
     private readonly options: NanoClientOptions
 
+    private readonly websocket?: NanoWebsocket
+
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
-        this.defaultRepresentative = options.defaultRepresentative || DEFAULT_REPRESENTATIVE
+        this.defaultRepresentative = options.defaultRepresentative || this.DEFAULT_REPRESENTATIVE
         this.options = options
+
+        this.websocket = options.websocketUrl ? new NanoWebsocket(options.websocketUrl) : undefined
     }
 
     /** Sends the specified amount of RAW to a Nano address */
@@ -181,4 +186,14 @@ export class NanoClient {
             seed: wallet.seed
         }
     }
+
+    /** Listen for sent transactions to a given address */
+    onSend(address: NanoAddress, sent: (s: Sent) => void) {
+        this.websocket?.onSent(address, sent)
+    }
+    /** Listens for received transaction on a given address */
+    onReceive(address: NanoAddress, receive: (s: Received) => void) {
+        this.websocket?.onReceived(address, receive)
+    }
 }
+

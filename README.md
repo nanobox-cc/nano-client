@@ -46,7 +46,7 @@ const account = {
 // Here we specify to only perform 1 "update". If there are multiple pending transactions, consider increasing this.
 const accountAfterReceive = await client.receive(account, 1) 
 
-// should show the new balance
+// Display the new balance
 console.log(updatedAccount.balance) 
 ```
 
@@ -60,8 +60,8 @@ const updatedAccount = await client.send(account, 'nano_3ktybzzy14zxgb6osbhcc155
     raw: '100000000'
 })
 
-// should show the new balance
-console.log(updatedAccount.balance) // should show the new balance
+// Display the new balance
+console.log(updatedAccount.balance)
 ```
 
 
@@ -73,4 +73,38 @@ To change representative for an account:
 // We re-use the account created in the previous section
 account.representative = 'nano_.....'
 await client.setRepresentative(account)
+```
+
+### Websockets
+
+There is preliminary websockets support, namely for listening on send and receive events for a given (or multiple)
+accounts:
+
+#### Setup
+
+To be able to use websockets, create the client with a websockets url:
+
+```javascript
+const client = new NanoClient({
+    // ... other options
+    websocketUrl: 'wss://socket.nanos.cc'
+})
+```
+
+#### To listen for receive events (address that received Nano)
+
+```javascript
+client.onReceive('nano_34prihdxwz3u4ps8qjnn14p7ujyewkoxkwyxm3u665it8rg5rdqw84qrypzk', received => {
+    // Prints receive information
+    console.log(s)
+})
+```
+
+#### To listen for send events (address that sent Nano)
+
+```javascript
+client.onSend('nano_34prihdxwz3u4ps8qjnn14p7ujyewkoxkwyxm3u665it8rg5rdqw84qrypzk', sent => {
+    // Prints sent information
+    console.log(s)
+})
 ```
