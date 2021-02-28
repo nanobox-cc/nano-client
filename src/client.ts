@@ -13,10 +13,7 @@ import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSen
 import {SignedBlock} from "nanocurrency-web/dist/lib/block-signer";
 import {HttpLibrary} from "@nanobox/nano-rpc-typescript";
 import {Wallet} from "nanocurrency-web/dist/lib/address-importer";
-import NanoWebsocket from "./lib/nano-ws";
-import WebSocket from "isomorphic-ws";
-
-const DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
+import NanoWebsocket, {Receive, Send} from "./lib/nano-ws";
 
 export interface BasicAuth {
     username: string
@@ -33,6 +30,7 @@ export interface NanoClientOptions {
 
 export class NanoClient {
 
+    private readonly DEFAULT_REPRESENTATIVE = 'nano_1kaiak5dbaaqpenb7nshqgq9tehgb5wy9y9ju9ehunexzmkzmzphk8yw8r7u';
     private readonly SEND_WORK = 'fffffff800000000';
     private readonly RECEIVE_WORK = 'fffffe0000000000';
     private readonly OPEN_FRONTIER = '0000000000000000000000000000000000000000000000000000000000000000'
@@ -44,7 +42,7 @@ export class NanoClient {
 
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
-        this.defaultRepresentative = options.defaultRepresentative || DEFAULT_REPRESENTATIVE
+        this.defaultRepresentative = options.defaultRepresentative || this.DEFAULT_REPRESENTATIVE
         this.options = options
 
         this.websocket = options.websocketUrl ? new NanoWebsocket(options.websocketUrl) : undefined
@@ -187,5 +185,9 @@ export class NanoClient {
             }),
             seed: wallet.seed
         }
+    }
+    /** Listen for transactions on the given addresses */
+    onTransaction(accounts: NanoAddress[], onSend?: (send: Send) => void, onReceive?: (received: Receive) => void): void {
+        this.websocket?.onTransaction(accounts, onSend, onReceive)
     }
 }
