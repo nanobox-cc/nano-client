@@ -1,4 +1,4 @@
-import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction,} from './models';
+import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction, RAW,} from './models';
 import {
   createConfiguration,
   NodeRPCsApi,
@@ -82,7 +82,8 @@ export class NanoRPCWrapper {
   }
 
   async getPending(
-      address: NanoAddress
+      address: NanoAddress,
+      threshold?: RAW,
   ): Promise<PendingTransaction | undefined> {
     const response = await this.nanoApi.pending({
       action: 'pending',
@@ -90,6 +91,7 @@ export class NanoRPCWrapper {
       include_only_confirmed: 'true',
       sorting: 'true',
       source: 'true',
+      threshold: threshold?.raw
     });
     if (response.blocks) {
       const blocks: [hash: string, block: any][] = Object.entries(response.blocks);

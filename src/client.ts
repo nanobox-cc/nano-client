@@ -79,18 +79,25 @@ export class NanoClient {
         }
     }
 
+    /** Resolves all transactions */
+    async receiveAll(account: NanoAccount, threshold?: RAW): Promise<ResolvedAccount> {
+        return this.receive(account, Number.MAX_SAFE_INTEGER, threshold)
+    }
+
     /** Resolves transactions for the Nano account */
     async receive(
         account: NanoAccount,
-        maxToResolve?: number
+        maxToResolve?: number,
+        threshold?: RAW,
     ): Promise<ResolvedAccount> {
-        return this.loadAndResolveAccountData(account, maxToResolve || 1, 0)
+        return this.loadAndResolveAccountData(account, maxToResolve || 1, 0, threshold)
     }
 
     private async loadAndResolveAccountData(
         account: NanoAccount,
         maxToResolve: number,
         depth: number,
+        threshold?: RAW,
     ): Promise<ResolvedAccount> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
@@ -100,10 +107,10 @@ export class NanoClient {
             // Use balance received
             account.balance = info?.balance || { raw: '0' };
 
-            const block: PendingTransaction | undefined = await this.nano.getPending(account.address);
+            const block: PendingTransaction | undefined = await this.nano.getPending(account.address, threshold);
             if (block && depth < maxToResolve) {
                 await this.receiveBlock(account, info?.frontier, block);
-                return this.loadAndResolveAccountData(account, maxToResolve, depth + 1);
+                return this.loadAndResolveAccountData(account, maxToResolve, depth + 1, threshold);
             }
             return {
                 account,
