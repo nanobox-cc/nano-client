@@ -50,18 +50,33 @@ const accountAfterReceive = await client.receive(account, 1)
 console.log(updatedAccount.balance) 
 ```
 
+#### Receive all
+
+There's also a utility function to receive all incoming transactions:
+
+```javascript
+const accountAfterReceive = await client.receiveAll(account)
+```
+
 ### Send
 
 To send your newly received nano:
 
 ```javascript
 // We re-use the account created in the previous section
-const updatedAccount = await client.send(account, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', {
+const accountAfterSend = await client.send(account, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', {
     raw: '100000000'
 })
+// accountAfterSend now has balance subtracted sent amount
+```
 
-// Display the new balance
-console.log(updatedAccount.balance)
+#### Send max
+
+There's a utility function to send all funds from an account to an address:
+
+```javascript
+const accountAfterSend = await client.sendMax(account)
+// accountAfterSend now has balance: 0
 ```
 
 

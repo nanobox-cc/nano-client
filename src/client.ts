@@ -56,30 +56,42 @@ export class NanoClient {
     ): Promise<NanoAccount | undefined> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
-            if (info) {
-                const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
-                const signed: SignedBlock = signSendBlock(
-                    fromAccount.privateKey,
-                    info.balance,
-                    fromAccount.address,
-                    toAddress,
-                    info.frontier,
-                    amount,
-                    workHash,
-                    info.representative
-                );
-                await this.nano.process(signed, "send");
-                return this.updateWalletAccount(fromAccount);
-            } else {
-                return fromAccount;
-            }
+            return info ? this.processSend(fromAccount, toAddress, amount, info) : fromAccount
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    /** Sends all current balance from NanoAccount to NanoAddress */
+    async sendMax(
+        fromAccount: NanoAccount,
+        toAddress: NanoAddress,
+    ): Promise<NanoAccount | undefined> {
+        try {
+            const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
+            return info ? this.processSend(fromAccount, toAddress, info.balance, info) : fromAccount
         } catch (error) {
             console.log(error);
         }
     }
 
+    private async processSend(fromAccount: NanoAccount, toAddress: NanoAddress, amount: RAW, info: AccountInfo): Promise<NanoAccount> {
+        const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
+        const signed: SignedBlock = signSendBlock(
+            fromAccount.privateKey,
+            info.balance,
+            fromAccount.address,
+            toAddress,
+            info.frontier,
+            amount,
+            workHash,
+            info.representative
+        );
+        await this.nano.process(signed, 'send');
+        return this.updateWalletAccount(fromAccount);
+    }
+
     /** Resolves all transactions */
-    async receiveAll(account: NanoAccount, threshold?: RAW): Promise<ResolvedAccount> {
+    async receiveAll(account: NanoAccount): Promise<ResolvedAccount> {
         return this.receive(account, Number.MAX_SAFE_INTEGER)
     }
 
@@ -138,7 +150,7 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
-        await this.nano.process(receiveBlock, "receive");
+        await this.nano.process(receiveBlock, 'receive');
     }
 
     /** Returns Account info from the network */
@@ -166,7 +178,7 @@ export class NanoClient {
                     workHash
                 );
                 // @ts-ignore
-                await this.nano.process(signed, "change");
+                await this.nano.process(signed, 'change');
             }
         } catch (e) {
             console.log(e);

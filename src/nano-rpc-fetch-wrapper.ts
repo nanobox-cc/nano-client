@@ -73,7 +73,7 @@ export class NanoRPCWrapper {
       return response.history.map((block) => {
         return {
           account: block.account,
-          amount: { raw: block.amount?.toString() },
+          amount: { raw: block.amount },
           type: block.type,
           localTimestamp: block.local_timestamp,
         };
@@ -127,7 +127,7 @@ export class NanoRPCWrapper {
       return {
         representative: response.representative,
         balance: {
-          raw: response.balance.toString(),
+          raw: response.balance,
         },
         frontier: response.frontier,
       };
