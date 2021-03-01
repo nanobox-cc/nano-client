@@ -12,6 +12,8 @@ import {crossFetch} from "./lib/cross-fetch";
 
 export class NanoRPCWrapper {
 
+  private readonly REQUIRED_RECEIVE_THRESHOLD = '1000000000000000'
+
   readonly nanoApi: NodeRPCsApi
 
   constructor(url: string, httpLibrary?: HttpLibrary, credentials?: BasicAuth) {
@@ -91,7 +93,7 @@ export class NanoRPCWrapper {
       include_only_confirmed: 'true',
       sorting: 'true',
       source: 'true',
-      threshold: threshold?.raw
+      threshold: this.REQUIRED_RECEIVE_THRESHOLD
     });
     if (response.blocks) {
       const blocks: [hash: string, block: any][] = Object.entries(response.blocks);
