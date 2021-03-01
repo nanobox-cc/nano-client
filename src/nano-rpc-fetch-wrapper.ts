@@ -1,4 +1,4 @@
-import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction,} from './models';
+import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction, RAW,} from './models';
 import {
   createConfiguration,
   NodeRPCsApi,
@@ -11,6 +11,8 @@ import {BasicAuth} from "./client";
 import {crossFetch} from "./lib/cross-fetch";
 
 export class NanoRPCWrapper {
+
+  private readonly REQUIRED_RECEIVE_THRESHOLD = '1000000000000000'
 
   readonly nanoApi: NodeRPCsApi
 
@@ -82,7 +84,8 @@ export class NanoRPCWrapper {
   }
 
   async getPending(
-      address: NanoAddress
+      address: NanoAddress,
+      threshold?: RAW,
   ): Promise<PendingTransaction | undefined> {
     const response = await this.nanoApi.pending({
       action: 'pending',
@@ -90,6 +93,7 @@ export class NanoRPCWrapper {
       include_only_confirmed: 'true',
       sorting: 'true',
       source: 'true',
+      threshold: this.REQUIRED_RECEIVE_THRESHOLD
     });
     if (response.blocks) {
       const blocks: [hash: string, block: any][] = Object.entries(response.blocks);

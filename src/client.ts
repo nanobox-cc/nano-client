@@ -79,10 +79,15 @@ export class NanoClient {
         }
     }
 
+    /** Resolves all transactions */
+    async receiveAll(account: NanoAccount, threshold?: RAW): Promise<ResolvedAccount> {
+        return this.receive(account, Number.MAX_SAFE_INTEGER)
+    }
+
     /** Resolves transactions for the Nano account */
     async receive(
         account: NanoAccount,
-        maxToResolve?: number
+        maxToResolve?: number,
     ): Promise<ResolvedAccount> {
         return this.loadAndResolveAccountData(account, maxToResolve || 1, 0)
     }
