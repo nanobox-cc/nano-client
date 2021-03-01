@@ -27,13 +27,13 @@ const client = new NanoClient({
 })
 ```
 
-### Receive
+### Receiving
 
-To receive nano, we need **address**, **public key** and **private key** to sign a receive block (_the block is signed
+To receive nano, we need an **address**, **public key** and **private key** to sign a receive block (_the block is signed
 locally_). For testing purposes this can be generated over at [Nano Tools](https://nanoo.tools/key-address-seed-converter) or any similar tool. There's
 also a convenient method in the client itself to generate a wallet: `client.generateWallet()`.
 
-To receive Nano, first ensure that there exists pending block for the account (aka. send a small test amount to the address).
+To receive Nano, first ensure that there exists pending block for the account by sending a small amount of Nano to the address.
 
 ```javascript
 const account = {
@@ -43,22 +43,20 @@ const account = {
     balance: { raw: '0' }, // Leave this one, balance will be updated
 }
 
-// Here we specify to only perform 1 "update". If there are multiple pending transactions, consider increasing this.
-const accountAfterReceive = await client.receive(account, 1) 
-
-// Display the new balance
-console.log(updatedAccount.balance) 
+// Receive incoming transactions
+const accountAfterReceive = await client.receive(account)
+// Account has updated balance with all incoming transactions
 ```
 
-#### Receive all
+#### Limit receives
 
-There's also a utility function to receive all incoming transactions:
+It's possible to specify number of receives to process by the client. Typically, to avoid loading for too long. 
 
 ```javascript
-const accountAfterReceive = await client.receiveAll(account)
+const accountAfterReceive = await client.receive(account, 1)
 ```
 
-### Send
+### Sending
 
 To send your newly received nano:
 
