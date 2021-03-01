@@ -56,26 +56,38 @@ export class NanoClient {
     ): Promise<NanoAccount | undefined> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
-            if (info) {
-                const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
-                const signed: SignedBlock = signSendBlock(
-                    fromAccount.privateKey,
-                    info.balance,
-                    fromAccount.address,
-                    toAddress,
-                    info.frontier,
-                    amount,
-                    workHash,
-                    info.representative
-                );
-                await this.nano.process(signed, 'send');
-                return this.updateWalletAccount(fromAccount);
-            } else {
-                return fromAccount;
-            }
+            return info ? this.processSend(fromAccount, toAddress, amount, info) : fromAccount
         } catch (error) {
             console.log(error);
         }
+    }
+    /** Sends all current balance from NanoAccount to NanoAddress */
+    async sendMax(
+        fromAccount: NanoAccount,
+        toAddress: NanoAddress,
+    ): Promise<NanoAccount | undefined> {
+        try {
+            const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
+            return info ? this.processSend(fromAccount, toAddress, info.balance, info) : fromAccount
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    private async processSend(fromAccount: NanoAccount, toAddress: NanoAddress, amount: RAW, info: AccountInfo): Promise<NanoAccount> {
+        const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
+        const signed: SignedBlock = signSendBlock(
+            fromAccount.privateKey,
+            info.balance,
+            fromAccount.address,
+            toAddress,
+            info.frontier,
+            amount,
+            workHash,
+            info.representative
+        );
+        await this.nano.process(signed, 'send');
+        return this.updateWalletAccount(fromAccount);
     }
 
     /** Resolves all transactions */

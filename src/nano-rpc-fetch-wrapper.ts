@@ -127,7 +127,7 @@ export class NanoRPCWrapper {
       return {
         representative: response.representative,
         balance: {
-          raw: response.balance.toString(),
+          raw: response.balance,
         },
         frontier: response.frontier,
       };
