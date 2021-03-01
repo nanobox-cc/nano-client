@@ -68,7 +68,6 @@ export class NanoClient {
                     workHash,
                     info.representative
                 );
-                // @ts-ignore
                 await this.nano.process(signed, "send");
                 return this.updateWalletAccount(fromAccount);
             } else {
@@ -139,7 +138,6 @@ export class NanoClient {
             pending.hash,
             pending.amount
         );
-        // @ts-ignore
         await this.nano.process(receiveBlock, "receive");
     }
 

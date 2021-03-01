@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@nanobox/nano-rpc-typescript": "^3.0.8",
+    "@nanobox/nano-rpc-typescript": "^3.0.9",
     "base-64": "^1.0.0",
     "bignumber.js": "^9.0.1",
     "cross-fetch": "^3.0.6",
