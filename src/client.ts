@@ -90,17 +90,12 @@ export class NanoClient {
         return this.updateWalletAccount(fromAccount);
     }
 
-    /** Resolves all transactions */
-    async receiveAll(account: NanoAccount): Promise<ResolvedAccount> {
-        return this.receive(account, Number.MAX_SAFE_INTEGER)
-    }
-
-    /** Resolves transactions for the Nano account */
+    /** Resolves transactions for the NanoAccount */
     async receive(
         account: NanoAccount,
         maxToResolve?: number,
     ): Promise<ResolvedAccount> {
-        return this.loadAndResolveAccountData(account, maxToResolve || 1, 0)
+        return this.loadAndResolveAccountData(account, maxToResolve || Number.MAX_SAFE_INTEGER, 0)
     }
 
     private async loadAndResolveAccountData(
