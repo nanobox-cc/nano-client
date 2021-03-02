@@ -85,7 +85,6 @@ export class NanoRPCWrapper {
 
   async getPending(
       address: NanoAddress,
-      threshold?: RAW,
   ): Promise<PendingTransaction | undefined> {
     const response = await this.nanoApi.pending({
       action: 'pending',
