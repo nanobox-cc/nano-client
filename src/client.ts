@@ -6,7 +6,8 @@ import {
     NanoWallet,
     PendingTransaction,
     RAW,
-    ResolvedAccount
+    ResolvedAccount,
+    Seed
 } from "./models";
 import {NanoRPCWrapper} from "./nano-rpc-fetch-wrapper";
 import {generateLegacyWallet, signReceiveBlock, signRepresentativeBlock, signSendBlock} from "./nanocurrency-web-utils";
@@ -182,8 +183,8 @@ export class NanoClient {
     }
 
     /** Generates a wallet based on a random Nano seed */
-    generateWallet(): NanoWallet {
-        const wallet: Wallet = generateLegacyWallet()
+    generateWallet(seed?: Seed): NanoWallet {
+        const wallet: Wallet = generateLegacyWallet(seed)
         return {
             accounts: wallet.accounts.map(a => {
                 return {
