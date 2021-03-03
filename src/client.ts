@@ -39,7 +39,7 @@ export class NanoClient {
     private readonly defaultRepresentative: NanoAddress
     private readonly options: NanoClientOptions
 
-    private readonly websocket?: NanoWebsocket
+    readonly websocket?: NanoWebsocket
 
     constructor(options: NanoClientOptions) {
         this.nano = new NanoRPCWrapper(options.url, options.httpLibrary, options.credentials)
@@ -205,6 +205,11 @@ export class NanoClient {
     /** Listens for received transaction on a given address */
     onReceive(address: NanoAddress, receive: (s: Received) => void) {
         this.websocket?.onReceived(address, receive)
+    }
+
+    /** Stops listening for WebSocket events */
+    close(): void {
+        this.websocket?.ws.close()
     }
 }
 

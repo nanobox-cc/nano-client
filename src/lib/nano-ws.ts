@@ -45,11 +45,11 @@ interface Listener {
 export default class NanoWebsocket {
 
     private listeners: Record<NanoAddress, Listener> = {}
-    private readonly ws: WebSocket
+    readonly ws: WebSocket
 
     constructor(websocketUrl: string) {
         this.ws = new WebSocket(websocketUrl)
-        this.ws.onerror = (error) => console.log(`Websocket error ${error}`)
+        this.ws.onerror = (error) => console.log(`Websocket error ${error.message}`)
         this.ws.onopen = () => {}
         this.ws.onclose = () => {}
 
