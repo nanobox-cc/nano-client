@@ -52,6 +52,15 @@ describe('nano-ws', () => {
         })
         sendMessage(SEND_JSON)
     })
+
+    test('given send and listen for receive on account', done => {
+        client.onReceive('nano_15n1r6b46eue5iy1ifoiemf74qeynfxcnpirnen54hg3zwfr8pyo6kazkxcj', receive => {
+            expect(receive.from).toStrictEqual('nano_3yxiqwmjq33z1gcdwn6t5njmfm8tdapze5p6i58jcuzdyi7g8nt3jzotzjuq')
+            expect(receive.amount.raw).toStrictEqual('3000000000000000000000000000')
+            done();
+        })
+        sendMessage(SEND_JSON)
+    })
 })
 
 afterAll(() =>{
