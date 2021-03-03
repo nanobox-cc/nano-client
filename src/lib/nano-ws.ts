@@ -28,15 +28,13 @@ interface ConfirmationMessage extends WSResponse {
 }
 
 export interface Sent {
-    account: NanoAddress
+    to: NanoAddress
     amount: RAW
-    currentBalance: RAW
 }
 
 export interface Received {
-    account: NanoAddress
+    from: NanoAddress
     amount: RAW
-    currentBalance: RAW
 }
 
 interface Listener {
@@ -60,18 +58,22 @@ export default class NanoWebsocket {
                 const response: WSResponse = JSON.parse(data.data);
                 if(response.topic === 'confirmation' && response.message) {
                     const confirmation: ConfirmationMessage = response.message
-                    const balance = confirmation.block.balance ? confirmation.block.balance.toString() : '0'
-
-                    if(confirmation.block.subtype === 'send') {
+                    if(confirmation.block.subtype === 'send' && confirmation.block.link_as_account) {
                         this.listeners[confirmation.account]?.onSent?.({
-                            account: confirmation.account,
-                            currentBalance: { raw: balance },
-                            amount: { raw: confirmation.amount }
+                            to: confirmation.block.link_as_account,
+                            amount: { raw: confirmation.amount },
                         })
-                    } else if(confirmation.block.subtype === 'receive') {
-                        this.listeners[confirmation.account]?.onReceived?.({
-                            account: confirmation.account,
-                            currentBalance: { raw: balance },
+                        this.listeners[confirmation.block.link_as_account]?.onReceived?.({
+                            from: confirmation.account,
+                            amount: { raw: confirmation.amount },
+                        })
+                    } else if(confirmation.block.subtype === 'receive' && confirmation.block.link_as_account) {
+                        this.listeners[confirmation.block.link_as_account]?.onReceived?.({
+                            from: confirmation.account,
+                            amount: { raw: confirmation.amount },
+                        })
+                        this.listeners[confirmation.account]?.onSent?.({
+                            to: confirmation.block.link_as_account,
                             amount: { raw: confirmation.amount },
                         })
                     }
