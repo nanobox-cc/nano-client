@@ -3,17 +3,19 @@ import WebSocket from "isomorphic-ws";
 import {NanoAddress, RAW} from "../models";
 import {BlockDataJson} from "@nanobox/nano-rpc-typescript";
 
-type WS_ACTION = 'subscribe'
+type WS_ACTION = 'subscribe' | 'update'
 type WS_TOPIC = 'confirmation'
 
 interface WSOptions {
-    accounts: NanoAddress[]
+    accounts_add?: NanoAddress[]
+    accounts?: NanoAddress[]
 }
 
 interface WSMessage {
     action: WS_ACTION
     topic: WS_TOPIC
     options: WSOptions
+    id?: string
 }
 
 interface WSResponse {
@@ -28,15 +30,13 @@ interface ConfirmationMessage extends WSResponse {
 }
 
 export interface Sent {
-    account: NanoAddress
+    to: NanoAddress
     amount: RAW
-    currentBalance: RAW
 }
 
 export interface Received {
-    account: NanoAddress
+    from: NanoAddress
     amount: RAW
-    currentBalance: RAW
 }
 
 interface Listener {
@@ -47,34 +47,39 @@ interface Listener {
 export default class NanoWebsocket {
 
     private listeners: Record<NanoAddress, Listener> = {}
-    private readonly ws: WebSocket
+    readonly ws: WebSocket
+    private processed: Record<string, string> = {}
 
     constructor(websocketUrl: string) {
         this.ws = new WebSocket(websocketUrl)
-        this.ws.onerror = (error) => console.log(`Websocket error ${error}`)
+        this.ws.onerror = (error) => console.log(`Websocket error ${error.message}`)
         this.ws.onopen = () => {}
         this.ws.onclose = () => {}
 
-        this.ws.onmessage = (data) => {
-            if(typeof data.data === 'string') {
-                const response: WSResponse = JSON.parse(data.data);
-                if(response.topic === 'confirmation' && response.message) {
-                    const confirmation: ConfirmationMessage = response.message
-                    const balance = confirmation.block.balance ? confirmation.block.balance.toString() : '0'
+        this.ws.onmessage = (message) => {
+            if(typeof message.data === 'string') {
+                const response: WSResponse = JSON.parse(message.data);
 
-                    if(confirmation.block.subtype === 'send') {
-                        this.listeners[confirmation.account]?.onSent?.({
-                            account: confirmation.account,
-                            currentBalance: { raw: balance },
-                            amount: { raw: confirmation.amount }
+                if(response.topic === 'confirmation' && response.message) {
+                    if(this.processed[response.message.block.signature]) {
+                        return;
+                    }
+                    const confirmation: ConfirmationMessage = response.message
+                    /** Send events are sufficient */
+                    if(confirmation.block.subtype === 'send' && confirmation.block.link_as_account) {
+                        const receiver = this.listeners[confirmation.block.link_as_account]
+                        receiver?.onReceived?.({
+                            from: confirmation.account,
+                            amount: { raw: confirmation.amount },
                         })
-                    } else if(confirmation.block.subtype === 'receive') {
-                        this.listeners[confirmation.account]?.onReceived?.({
-                            account: confirmation.account,
-                            currentBalance: { raw: balance },
+
+                        const sender = this.listeners[confirmation.account]
+                        sender?.onSent?.({
+                            to: confirmation.block.link_as_account,
                             amount: { raw: confirmation.amount },
                         })
                     }
+                    this.processed[response.message.block.signature] = response.message.block.signature
                 }
             } else {
                 console.log('unable to parse websocket message')
