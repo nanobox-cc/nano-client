@@ -1,0 +1,14 @@
+{
+  "name": "nano-ping-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "run-app": "yarn && node index.js"
+  },
+  "dependencies": {
+    "@nanobox/nano-client": "^1.4.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
