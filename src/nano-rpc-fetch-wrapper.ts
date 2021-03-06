@@ -61,14 +61,14 @@ export class NanoRPCWrapper {
   }
 
   async getHistory(
-      address: NanoAddress
+      address: NanoAddress,
+      count: number = 10,
   ): Promise<NanoTransaction[]> {
     try {
-
       const response = await this.nanoApi.accountHistory({
         action: 'account_history',
         account: address,
-        count: '10',
+        count: count.toString(),
       });
       return response.history.map((block) => {
         return {

@@ -2,7 +2,7 @@ import {
     AccountInfo,
     Frontier,
     NanoAccount,
-    NanoAddress,
+    NanoAddress, NanoTransaction,
     NanoWallet,
     PendingTransaction,
     RAW,
@@ -180,6 +180,14 @@ export class NanoClient {
             console.log(e);
             return undefined;
         }
+    }
+
+    /** Returns send and receive transactions for an account */
+    async getTransactions(
+        address: NanoAddress,
+        count?: number,
+    ): Promise<NanoTransaction[]> {
+        return this.nano.getHistory(address, count)
     }
 
     /** Generates a wallet based on a random Nano seed */
