@@ -42,7 +42,7 @@ const account = {
     address: "nano_.....", // Replace with address here
     publicKey: "public-key", // Replace public key
     privateKey: "private-key", // Replace private key
-    balance: { raw: '0' }, // Leave this one, balance will be updated
+    balance: NANO.ZERO // Balance will be updated on receive/send
 }
 
 // Receive incoming transactions
@@ -64,9 +64,7 @@ To send your newly received nano:
 
 ```javascript
 // We re-use the account created in the previous section
-const accountAfterSend = await client.send(account, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', {
-    raw: '100000000'
-})
+const accountAfterSend = await client.send(account, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', NANO.fromNumber(0.001))
 // accountAfterSend now has balance subtracted sent amount
 ```
 
