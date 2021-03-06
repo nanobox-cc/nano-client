@@ -4,7 +4,7 @@ import type {
   Frontier,
   NanoAddress,
   PrivateKey,
-  RAW,
+  NANO,
 } from './models';
 import type {
   SendBlock,
@@ -19,18 +19,18 @@ export function signReceiveBlock(
   privateKey: PrivateKey,
   workHash: string,
   frontier: Frontier,
-  walletBalance: RAW,
+  walletBalance: NANO,
   representative: NanoAddress,
   blockHash: BlockHash,
-  amount: RAW
+  amount: NANO
 ): SignedBlock {
   const data: ReceiveBlock = {
-    walletBalanceRaw: walletBalance.raw,
+    walletBalanceRaw: walletBalance.RAW,
     toAddress: address,
     transactionHash: blockHash,
     frontier: frontier,
     representativeAddress: representative,
-    amountRaw: amount.raw,
+    amountRaw: amount.RAW,
     work: workHash,
   };
 
@@ -39,21 +39,21 @@ export function signReceiveBlock(
 
 export function signSendBlock(
   privateKey: PrivateKey,
-  walletBalance: RAW,
+  walletBalance: NANO,
   fromAddress: NanoAddress,
   toAddress: NanoAddress,
   frontier: string,
-  amount: RAW,
+  amount: NANO,
   workHash: string,
   representative: NanoAddress
 ): SignedBlock {
   const data: SendBlock = {
-    walletBalanceRaw: walletBalance.raw,
+    walletBalanceRaw: walletBalance.RAW,
     fromAddress: fromAddress,
     toAddress: toAddress,
     representativeAddress: representative,
     frontier: frontier,
-    amountRaw: amount.raw,
+    amountRaw: amount.RAW,
     work: workHash,
   };
 
@@ -62,14 +62,14 @@ export function signSendBlock(
 
 export function signRepresentativeBlock(
   privateKey: PrivateKey,
-  walletBalance: RAW,
+  walletBalance: NANO,
   address: NanoAddress,
   representativeAddress: NanoAddress,
   frontier: string,
   workHash: string
 ): SignedBlock {
   const data: RepresentativeBlock = {
-    walletBalanceRaw: walletBalance.raw,
+    walletBalanceRaw: walletBalance.RAW,
     address: address,
     representativeAddress: representativeAddress,
     frontier: frontier,

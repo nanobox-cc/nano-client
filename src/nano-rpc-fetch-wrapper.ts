@@ -1,4 +1,4 @@
-import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction, RAW,} from './models';
+import type {AccountInfo, NanoAddress, NanoTransaction, PendingTransaction,} from './models';
 import {
   createConfiguration,
   NodeRPCsApi,
@@ -9,6 +9,7 @@ import {
 } from '@nanobox/nano-rpc-typescript';
 import {BasicAuth} from "./client";
 import {crossFetch} from "./lib/cross-fetch";
+import {NANO} from "./models";
 
 export class NanoRPCWrapper {
 
@@ -73,7 +74,7 @@ export class NanoRPCWrapper {
       return response.history.map((block) => {
         return {
           account: block.account,
-          amount: { raw: block.amount },
+          amount: NANO.fromRAW(block.amount),
           type: block.type,
           localTimestamp: block.local_timestamp,
         };
@@ -100,9 +101,7 @@ export class NanoRPCWrapper {
         const [blockHash, {amount}] = blocks[0];
         return {
           hash: blockHash,
-          amount: {
-            raw: amount,
-          },
+          amount: NANO.fromRAW(amount),
         };
       } else {
         return undefined
@@ -125,9 +124,7 @@ export class NanoRPCWrapper {
     } else {
       return {
         representative: response.representative,
-        balance: {
-          raw: response.balance,
-        },
+        balance: NANO.fromRAW(response.balance),
         frontier: response.frontier,
       };
     }
