@@ -16,11 +16,11 @@ describe('NANO', function () {
     test('add', () => {
         const one = NANO.fromNumber(100)
         const two = NANO.fromNumber(1010)
-        expect(one.add(two)).toStrictEqual(NANO.fromNumber(1110))
+        expect(one.add(two).RAW).toStrictEqual(NANO.fromNumber(1110).RAW)
     })
     test('subtract', () => {
         const one = NANO.fromNumber(100)
         const two = NANO.fromNumber(1010)
-        expect(two.subtract(one)).toStrictEqual(NANO.fromNumber(910))
+        expect(two.subtract(one).RAW).toStrictEqual(NANO.fromNumber(910).RAW)
     })
 });
