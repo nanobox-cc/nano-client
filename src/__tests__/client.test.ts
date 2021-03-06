@@ -49,7 +49,17 @@ describe('nano client', () => {
         await client.setRepresentative(wallet.accounts[0])
     });
 
-    test('with basic auth', () => {
+    test('account history', async () => {
+        const res = await client.getTransactions('nano_1y3jz5uu46tm3j6dauwz5w8yxy43y8h3o6p4makmz15a46msf8uh5qw7m1g4')
+        expect(res).toHaveLength(10)
+        expect(res[0]).toStrictEqual({
+            account: "nano_3yxiqwmjq33z1gcdwn6t5njmfm8tdapze5p6i58jcuzdyi7g8nt3jzotzjuq",
+            amount: {
+                raw: "15000000000000000000000000000",
+            },
+            localTimestamp: "1614635188",
+            type: "send",
+        })
 
     })
 })
