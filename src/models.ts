@@ -1,4 +1,3 @@
-import {tools} from "nanocurrency-web";
 import {rawToNANO, NANOToNumber, NANOToRaw} from "./lib/conversions";
 
 export type NanoAddress = string;
