@@ -1,6 +1,6 @@
 import WebSocket from "isomorphic-ws";
 
-import {NanoAddress, RAW} from "../models";
+import {NanoAddress, NANO} from "../models";
 import {BlockDataJson} from "@nanobox/nano-rpc-typescript";
 
 type WS_ACTION = 'subscribe' | 'update'
@@ -31,12 +31,12 @@ interface ConfirmationMessage extends WSResponse {
 
 export interface Sent {
     to: NanoAddress
-    amount: RAW
+    amount: NANO
 }
 
 export interface Received {
     from: NanoAddress
-    amount: RAW
+    amount: NANO
 }
 
 interface Listener {
@@ -70,13 +70,13 @@ export default class NanoWebsocket {
                         const receiver = this.listeners[confirmation.block.link_as_account]
                         receiver?.onReceived?.({
                             from: confirmation.account,
-                            amount: { raw: confirmation.amount },
+                            amount: NANO.fromRAW(confirmation.amount),
                         })
 
                         const sender = this.listeners[confirmation.account]
                         sender?.onSent?.({
                             to: confirmation.block.link_as_account,
-                            amount: { raw: confirmation.amount },
+                            amount: NANO.fromRAW(confirmation.amount),
                         })
                     }
                     this.processed[response.message.block.signature] = response.message.block.signature

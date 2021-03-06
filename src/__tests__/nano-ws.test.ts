@@ -73,7 +73,7 @@ describe('nano-ws', () => {
     test('given send should notify on account', done => {
         client.onSend('nano_3yxiqwmjq33z1gcdwn6t5njmfm8tdapze5p6i58jcuzdyi7g8nt3jzotzjuq', send => {
             expect(send.to).toStrictEqual('nano_15n1r6b46eue5iy1ifoiemf74qeynfxcnpirnen54hg3zwfr8pyo6kazkxcj')
-            expect(send.amount.raw).toStrictEqual('3000000000000000000000000000')
+            expect(send.amount.RAW).toStrictEqual('3000000000000000000000000000')
             done()
         })
         sendMessage(SEND_JSON)

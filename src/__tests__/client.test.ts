@@ -1,6 +1,6 @@
 import {NanoClient} from "../client";
 import {mockHttpLibrary} from "./utils/http-utils";
-import {NanoWallet} from "../models";
+import {NanoWallet, NANO} from "../models";
 
 const client = new NanoClient({
     url: "https://api.nanobox.cc",
@@ -20,7 +20,7 @@ describe('nano client', () => {
             account: {
                 address: randomAccount.address,
                 representative: 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1',
-                balance: { raw: '54933693796927740175384549687297' },
+                balance: NANO.fromRAW('54933693796927740175384549687297'),
                 privateKey: randomAccount.privateKey,
                 publicKey: randomAccount.publicKey,
             },
@@ -32,13 +32,11 @@ describe('nano client', () => {
         const wallet: NanoWallet = client.generateWallet()
         const randomAccount = wallet.accounts[0];
 
-        const updatedAccount = await client.send(randomAccount, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', {
-            raw: '10000'
-        })
+        const updatedAccount = await client.send(randomAccount, 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', NANO.fromRAW('10000'))
         expect(updatedAccount).toStrictEqual({
             address: randomAccount.address,
             representative: 'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1',
-            balance: { raw: '54933693796927740175384549687297' },
+            balance: NANO.fromRAW('54933693796927740175384549687297'),
             privateKey: randomAccount.privateKey,
             publicKey: randomAccount.publicKey,
         })
@@ -54,9 +52,7 @@ describe('nano client', () => {
         expect(res).toHaveLength(10)
         expect(res[0]).toStrictEqual({
             account: "nano_3yxiqwmjq33z1gcdwn6t5njmfm8tdapze5p6i58jcuzdyi7g8nt3jzotzjuq",
-            amount: {
-                raw: "15000000000000000000000000000",
-            },
+            amount: NANO.fromRAW("15000000000000000000000000000"),
             localTimestamp: "1614635188",
             type: "send",
         })

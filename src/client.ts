@@ -5,7 +5,7 @@ import {
     NanoAddress, NanoTransaction,
     NanoWallet,
     PendingTransaction,
-    RAW,
+    NANO,
     ResolvedAccount,
     Seed
 } from "./models";
@@ -53,7 +53,7 @@ export class NanoClient {
     async send(
         fromAccount: NanoAccount,
         toAddress: NanoAddress,
-        amount: RAW
+        amount: NANO
     ): Promise<NanoAccount | undefined> {
         try {
             const info: AccountInfo | undefined = await this.nano.accountInfo(fromAccount.address);
@@ -75,7 +75,7 @@ export class NanoClient {
         }
     }
 
-    private async processSend(fromAccount: NanoAccount, toAddress: NanoAddress, amount: RAW, info: AccountInfo): Promise<NanoAccount> {
+    private async processSend(fromAccount: NanoAccount, toAddress: NanoAddress, amount: NANO, info: AccountInfo): Promise<NanoAccount> {
         const workHash: string = await this.nano.generateWork(info.frontier, this.SEND_WORK);
         const signed: SignedBlock = signSendBlock(
             fromAccount.privateKey,
@@ -110,7 +110,7 @@ export class NanoClient {
             account.representative =
                 info?.representative || account.representative || this.defaultRepresentative;
             // Use balance received
-            account.balance = info?.balance || { raw: '0' };
+            account.balance = info?.balance || NANO.ZERO;
 
             const block: PendingTransaction | undefined = await this.nano.getPending(account.address);
             if (block && depth < maxToResolve) {
@@ -154,7 +154,7 @@ export class NanoClient {
         const info: AccountInfo | undefined = await this.nano.accountInfo(account.address);
         return {
             ...account,
-            balance: info?.balance || { raw: '0' },
+            balance: info?.balance || NANO.ZERO,
             representative: info?.representative || this.defaultRepresentative,
         };
     }
@@ -198,7 +198,7 @@ export class NanoClient {
                 return {
                     publicKey: a.publicKey,
                     privateKey: a.privateKey,
-                    balance: { raw: '0' },
+                    balance: NANO.ZERO,
                     address: a.address
                 }
             }),
