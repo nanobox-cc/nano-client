@@ -6,7 +6,7 @@
 A simplified client for the Nano network. This library aims to support the most used actions for interacting
 with Nano.
 
-You can also check out [Nano Ping](https://github.com/nanobox-cc/nano-client/tree/master/examples/nano-ping) in under examples for a
+You can also check out [Nano Ping](https://github.com/nanobox-cc/nano-client/tree/master/examples/nano-ping) over at examples for a
 sample implementation with this library.
 
 ## Install
