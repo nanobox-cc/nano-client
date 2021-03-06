@@ -102,7 +102,7 @@ To be able to use websockets, create the client with a websockets url:
 ```javascript
 const client = new NanoClient({
     // ... other options
-    websocketUrl: 'wss://socket.nanos.cc'
+    websocketUrl: 'wss://ws.nanobox.cc'
 })
 ```
 
