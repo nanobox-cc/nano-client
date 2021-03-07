@@ -91,11 +91,23 @@ export class NanoClient {
         return this.updateWalletAccount(fromAccount);
     }
 
-    /** Resolves transactions for the NanoAccount */
+    /** Updates account to the latest state, resolves any pending blocks */
+    async update(
+        account: NanoAccount,
+        processMaxPending?: number,
+    ): Promise<ResolvedAccount> {
+        return this.loadAndResolveAccountData(account, processMaxPending || Number.MAX_SAFE_INTEGER, 0)
+    }
+
+    /**
+     * Resolves transactions for the NanoAccount
+     * @deprecated
+     */
     async receive(
         account: NanoAccount,
         maxToResolve?: number,
     ): Promise<ResolvedAccount> {
+        console.log(`receive() is deprecated, use update() instead`)
         return this.loadAndResolveAccountData(account, maxToResolve || Number.MAX_SAFE_INTEGER, 0)
     }
 
