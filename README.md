@@ -1,10 +1,10 @@
 [![npm version](https://badge.fury.io/js/%40nanobox%2Fnano-client.svg)](https://badge.fury.io/js/%40nanobox%2Fnano-client)
 ![build](https://github.com/nanobox-cc/nano-client/actions/workflows/build.yml/badge.svg)
 
-# Simple Nano client for Node and Browser
+# Simple Nano client for node.js and browser
 
-A simplified client for the Nano network. This library aims to support the most used actions for interacting
-with Nano.
+A simplified client for the [Nano cryptocurrency](https://nano.org/). This library aims to support the most general use-cases for
+interacting with the nano network. This be to update an account, list transactions and to send funds.
 
 You can also check out [Nano Ping](https://github.com/nanobox-cc/nano-client/tree/master/examples/nano-ping) over at examples for a
 sample implementation with this library.
@@ -103,7 +103,7 @@ const client = new NanoClient({
 })
 ```
 
-#### To listen for receive events (address that received Nano)
+#### To listen for receive events (address that received nano)
 
 ```javascript
 client.onReceive('nano_34prihdxwz3u4ps8qjnn14p7ujyewkoxkwyxm3u665it8rg5rdqw84qrypzk', received => {
@@ -112,7 +112,7 @@ client.onReceive('nano_34prihdxwz3u4ps8qjnn14p7ujyewkoxkwyxm3u665it8rg5rdqw84qry
 })
 ```
 
-#### To listen for send events (address that sent Nano)
+#### To listen for send events (address that sent nano)
 
 ```javascript
 client.onSend('nano_34prihdxwz3u4ps8qjnn14p7ujyewkoxkwyxm3u665it8rg5rdqw84qrypzk', sent => {
