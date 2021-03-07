@@ -33,15 +33,15 @@ const client = new NanoClient({
 
 To receive nano, we need an **address**, **public key** and **private key** to sign a receive block (_the block is signed
 locally_). For testing purposes this can be generated over at [Nano Tools](https://nanoo.tools/key-address-seed-converter) or any similar tool. There's
-also a convenient method in the client itself to generate a wallet: `client.generateWallet()`.
+also a convenient method in the client itself to generate a wallet: `client.generateWallet()`. A wallet will be used to derive new accounts.
 
 To receive Nano, first ensure that there exists pending block for the account by sending a small amount of Nano to the address.
 
 ```javascript
 const account = {
-    address: "nano_.....", // Replace with address here
-    publicKey: "public-key", // Replace public key
-    privateKey: "private-key", // Replace private key
+    address: "nano_.....", // Replace with YOUR address here
+    publicKey: "public-key", // Replace with YOUR public key
+    privateKey: "private-key", // Replace with YOUR private key
     balance: NANO.ZERO // Balance will be updated on receive/send
 }
 
