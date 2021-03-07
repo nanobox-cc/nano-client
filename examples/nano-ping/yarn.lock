@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@nanobox/nano-client@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@nanobox/nano-client/-/nano-client-1.4.0.tgz#46b9eaa1a0a7d5681a970d2379b9b0de11f3c460"
-  integrity sha512-9F9T3bI1/HauyyPcli/Z6wEzpZOzrUEBvjR3dGb7cpSVKH5NYD+tIcHYiL6VOlenu0e1AfPPFBCh1wd9U40Bgg==
+"@nanobox/nano-client@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@nanobox/nano-client/-/nano-client-2.0.0.tgz#a2f88ebcbee50726c6a7326dff8127464701cc05"
+  integrity sha512-8GWlVXmaIqWvjzbAkxVLFTyHYI9ttUK8nbEBtn1JaTrTQNHHlpJkyUwqQ2CHFL3bBYRZaE5xQCX7QNd0DJxaPQ==
   dependencies:
     "@nanobox/nano-rpc-typescript" "^3.0.9"
     base-64 "^1.0.0"

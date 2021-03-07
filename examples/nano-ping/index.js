@@ -22,8 +22,8 @@ qrcode.generate(account.address);
 console.log(`Send nano to address: ${account.address}`)
 
 client.onReceive(account.address, async received => {
-    console.log(`receives ${received.amount.raw} RAW from ${received.from}`)
+    console.log(`receives ${received.amount.asNumber} NANO from ${received.from}`)
     const updatedAccount = await client.receive(account)
-    console.log(`sends ${updatedAccount.account.balance.raw} RAW to ${received.from}`)
+    console.log(`sends ${updatedAccount.account.balance.asNumber} NANO to ${received.from}`)
     await client.sendMax(account, received.from)
 })
