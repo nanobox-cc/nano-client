@@ -11,6 +11,10 @@
     "build": "tsc",
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nanobox-cc/nano-client.git"
+  },
   "dependencies": {
     "@nanobox/nano-rpc-typescript": "^3.0.9",
     "base-64": "^1.0.0",
