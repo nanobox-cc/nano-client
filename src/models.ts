@@ -1,4 +1,4 @@
-import {rawToNANO, NANOToNumber, NANOToRaw} from "./lib/conversions";
+import {rawToNANO, NANOToNumber, fromNANOString, addNano, subtractNano} from "./lib/conversions";
 
 export type NanoAddress = string;
 export type Seed = string;
@@ -31,13 +31,16 @@ export interface NanoTransaction {
 
 export class NANO {
 
+  /** The RAW value of this representation. */
   readonly RAW: string
+  /** The string value of this representation. */
   readonly asString: string
+  /** NANO as number. This representation lose precision on large fractions. */
   readonly asNumber: number
 
   static readonly ZERO: NANO = new NANO('0')
   static readonly fromRAW = (raw: string) => new NANO(raw)
-  static readonly fromNumber = (nano: number) => new NANO(NANOToRaw(nano.toString()))
+  static readonly fromNumber = (nano: number) => fromNANOString(nano.toString())
 
   private constructor(RAW: string) {
     this.RAW = RAW
@@ -45,8 +48,8 @@ export class NANO {
     this.asNumber = NANOToNumber(this)
   }
 
-  add = (other: NANO) => NANO.fromNumber(this.asNumber + other.asNumber)
-  subtract = (other: NANO) => NANO.fromNumber(this.asNumber - other.asNumber)
+  plus = (other: NANO) => addNano(this, other)
+  minus = (other: NANO) => subtractNano(this, other)
 }
 
 export interface AccountInfo {
