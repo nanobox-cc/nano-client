@@ -80,5 +80,5 @@ export function signRepresentativeBlock(
 }
 
 export function generateLegacyWallet(seed?: string): Wallet {
-  return wallet.generateLegacy(seed || "")
+  return wallet.generateLegacy(seed)
 }
