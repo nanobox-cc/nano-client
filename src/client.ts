@@ -173,7 +173,6 @@ export class NanoClient {
                     info.frontier,
                     workHash
                 );
-                // @ts-ignore
                 await this.nano.process(signed, 'change');
             }
         } catch (e) {
