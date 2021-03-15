@@ -8,7 +8,7 @@
     "run-app": "yarn && node index.js"
   },
   "dependencies": {
-    "@nanobox/nano-client": "^2.0.0",
+    "@nanobox/nano-client": "^2.0.1",
     "qrcode-terminal": "^0.12.0"
   }
 }

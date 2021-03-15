@@ -2,17 +2,17 @@
 # yarn lockfile v1
 
 
-"@nanobox/nano-client@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@nanobox/nano-client/-/nano-client-2.0.0.tgz#a2f88ebcbee50726c6a7326dff8127464701cc05"
-  integrity sha512-8GWlVXmaIqWvjzbAkxVLFTyHYI9ttUK8nbEBtn1JaTrTQNHHlpJkyUwqQ2CHFL3bBYRZaE5xQCX7QNd0DJxaPQ==
+"@nanobox/nano-client@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@nanobox/nano-client/-/nano-client-2.0.1.tgz#a7c8368b6fdd902b9fd4806ce2a3c402bf440b81"
+  integrity sha512-mJKcNpftEekjEYaq0baTQQOmG3icEeCDUT0eumxj9ETMAkTatNvckYtDlbilrkIcnrqvXZNj6Gto6TVb6vaU6w==
   dependencies:
     "@nanobox/nano-rpc-typescript" "^3.0.9"
     base-64 "^1.0.0"
     bignumber.js "^9.0.1"
     cross-fetch "^3.0.6"
     isomorphic-ws "^4.0.1"
-    nanocurrency-web "^1.3.0"
+    nanocurrency-web "^1.3.1"
     typescript "^4.2.2"
     ws "^7.4.3"
 
@@ -67,10 +67,10 @@ isomorphic-ws@^4.0.1:
   resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-4.0.1.tgz#55fd4cd6c5e6491e76dc125938dd863f5cd4f2dc"
   integrity sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==
 
-nanocurrency-web@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/nanocurrency-web/-/nanocurrency-web-1.3.0.tgz#799c04cdf5401e944a5c5b1415d11c2ba2f721ec"
-  integrity sha512-tO23yPS0kWfpNq6S9Zzb4CaCCNUp2IzU11WagMvWgoMRImHqhJm064C96+ca5XkhoTxdQftQwLNWHgjhYD+26g==
+nanocurrency-web@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/nanocurrency-web/-/nanocurrency-web-1.3.1.tgz#388e2f0d96b0400f5be62f54a29859bc887322d8"
+  integrity sha512-1p0t8f3qsrYKPeFmQRdlZhAp6KMK81tgGQAcc3psvJLsfpE2rnROVfm6nToyyNy+43H5vpTQFF9Q/1AXGieTgg==
   dependencies:
     bignumber.js "9.0.0"
     blakejs "1.1.0"
